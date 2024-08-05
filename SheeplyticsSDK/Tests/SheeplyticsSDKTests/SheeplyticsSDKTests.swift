@@ -34,3 +34,8 @@ let mockConfig = Sheeplytics.Config(
     try Sheeplytics.initialize(config: mockConfig)
     try await Sheeplytics.setFlag("didReceiveAdConsent")
 }
+
+@Test @MainActor func sendActionEvent() async throws {
+    try Sheeplytics.initialize(config: mockConfig)
+    try await Sheeplytics.logAction("didExportChat")
+}

@@ -15,7 +15,7 @@ import { AutoRouter } from 'itty-router'
 
 const router = AutoRouter()
 
-type EventKind = 'flag' | unknown
+type EventKind = 'flag' | 'action'
 
 interface BaseEvent {
 	kind: EventKind
@@ -27,6 +27,7 @@ interface TypedEvent<T> extends Omit<BaseEvent, 'data'> {
 }
 
 type FlagEvent = TypedEvent<{ name: string, value: boolean }>
+type ActionEvent = TypedEvent<{ name: string, value: string }>
 
 type IngestResponseKind = 'acknowledged' | 'rejected'
 
@@ -49,7 +50,7 @@ async function ingest(request: Request, context: any): Promise<IngestResponse> {
 
 	// Parse typed event
 	switch (kind) {
-		case 'flag':
+		case 'flag': {
 			const event = innerEvent as TypedEvent<FlagEvent>
 			console.log({
 				event: 'receivedEvent',
@@ -57,13 +58,24 @@ async function ingest(request: Request, context: any): Promise<IngestResponse> {
 				eventData: event,
 			})
 			return { kind: 'acknowledged'}
-		default:
+		}
+		case 'action': {
+			const event = innerEvent as TypedEvent<ActionEvent>
+			console.log({
+				event: 'receivedEvent',
+				eventType: 'actionEvent',
+				eventData: event,
+			})
+			return { kind: 'acknowledged' }
+		}
+		default: {
 			console.log({
 				event: 'receivedEvent',
 				eventType: 'unknown',
 				eventData: innerEvent,
 			})
 			return { kind: 'rejected' }
+		}
 	}
 }
 

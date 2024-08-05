@@ -13,5 +13,8 @@ public extension Sheeplytics {
         
         /// A boolean flag that can be set or unset.
         case flag
+        
+        /// An action that has been completed by the user.
+        case action
     }
 }

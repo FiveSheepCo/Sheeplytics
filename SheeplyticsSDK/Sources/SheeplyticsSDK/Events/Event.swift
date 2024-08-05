@@ -11,16 +11,19 @@ public extension Sheeplytics {
     
     struct Event: Codable {
         
-        /// The type of event.
+        /// Event Type
         let kind: EventKind
         
-        /// The app identifier.
+        /// App Identifier
         let appId: String
         
-        /// The user identifier.
+        /// User Identifier
         let userId: String
         
-        /// The JSON payload.
+        /// Event Timestamp
+        let timestamp: Date
+        
+        /// Inner JSON Payload
         let data: Data
         
         init(kind: EventKind, appId: String, userId: String, data: Data) {
@@ -28,6 +31,7 @@ public extension Sheeplytics {
             self.appId = appId
             self.userId = userId
             self.data = data
+            self.timestamp = Date.now
         }
     }
 }

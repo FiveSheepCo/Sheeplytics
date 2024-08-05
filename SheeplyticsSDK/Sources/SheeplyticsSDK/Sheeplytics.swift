@@ -58,6 +58,13 @@ public extension Sheeplytics {
         let event = try self.wrap(FlagEvent(name: name, value: value))
         try await self.send(event)
     }
+    
+    func logAction(_ name: String) async throws {
+        try self.ensureInitialized()
+        
+        let event = try self.wrap(ActionEvent(name: name))
+        try await self.send(event)
+    }
 }
 
 public extension Sheeplytics {
@@ -72,5 +79,9 @@ public extension Sheeplytics {
     
     static func setFlag(_ name: String, active value: Bool = true) async throws {
         try await Self.shared.setFlag(name, active: value)
+    }
+    
+    static func logAction(_ name: String) async throws {
+        try await Self.shared.logAction(name)
     }
 }
