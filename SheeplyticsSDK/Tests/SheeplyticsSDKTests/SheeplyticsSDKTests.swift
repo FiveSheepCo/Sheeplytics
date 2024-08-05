@@ -9,12 +9,12 @@ let mockConfig = Sheeplytics.Config(
 )
 
 @Test @MainActor func initializeSharedInstance() async throws {
-    try await Sheeplytics.initialize(config: mockConfig)
+    try Sheeplytics.initialize(config: mockConfig)
     try Sheeplytics.shared.ensureInitialized()
 }
 
 @Test @MainActor func encodeAndDecodeFlagEvent() async throws {
-    try await Sheeplytics.initialize(config: mockConfig)
+    try Sheeplytics.initialize(config: mockConfig)
     
     let specificEvent = Sheeplytics.FlagEvent(name: "foo", value: true)
     let wrappedEvent = try Sheeplytics.shared.wrap(specificEvent)
@@ -31,6 +31,6 @@ let mockConfig = Sheeplytics.Config(
 }
 
 @Test @MainActor func sendFlagEvent() async throws {
-    try await Sheeplytics.initialize(config: mockConfig)
+    try Sheeplytics.initialize(config: mockConfig)
     try await Sheeplytics.setFlag("didReceiveAdConsent")
 }

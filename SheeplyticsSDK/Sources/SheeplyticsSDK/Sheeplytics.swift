@@ -26,7 +26,7 @@ public final class Sheeplytics {
 
 public extension Sheeplytics {
     
-    func initialize(config: Sheeplytics.Config) async throws {
+    func initialize(config: Sheeplytics.Config) throws {
         
         // Parse endpoint URL
         guard let url = URL(string: config.endpoint) else {
@@ -48,6 +48,10 @@ public extension Sheeplytics {
         self.userIdentifier = userIdentifier
     }
     
+    func initialize(_ endpoint: String) throws {
+        try self.initialize(config: Config(endpoint: endpoint))
+    }
+    
     func setFlag(_ name: String, active value: Bool = true) async throws {
         try self.ensureInitialized()
         
@@ -58,8 +62,12 @@ public extension Sheeplytics {
 
 public extension Sheeplytics {
     
-    static func initialize(config: Sheeplytics.Config) async throws {
-        try await Self.shared.initialize(config: config)
+    static func initialize(config: Sheeplytics.Config) throws {
+        try Self.shared.initialize(config: config)
+    }
+    
+    static func initialize(_ endpoint: String) throws {
+        try Self.initialize(config: Config(endpoint: endpoint))
     }
     
     static func setFlag(_ name: String, active value: Bool = true) async throws {
