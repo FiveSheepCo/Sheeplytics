@@ -1,3 +1,5 @@
+import { AutoRouter } from 'itty-router'
+
 /**
  * Welcome to Cloudflare Workers! This is your first worker.
  *
@@ -11,8 +13,61 @@
  * Learn more at https://developers.cloudflare.com/workers/
  */
 
-export default {
-	async fetch(request, env, ctx): Promise<Response> {
-		return new Response('Hello World!');
-	},
-} satisfies ExportedHandler<Env>;
+const router = AutoRouter()
+
+type EventKind = 'flag' | unknown
+
+interface BaseEvent {
+	kind: EventKind
+	data: string
+}
+
+interface TypedEvent<T> extends Omit<BaseEvent, 'data'> {
+	data: T
+}
+
+type FlagEvent = TypedEvent<{ name: string, value: boolean }>
+
+type IngestResponseKind = 'acknowledged' | 'rejected'
+
+type IngestResponse = {
+	kind: IngestResponseKind
+}
+
+/** Ingestion route for analytics events. */
+async function ingest(request: Request, context: any): Promise<IngestResponse> {
+	const json = await request.json()
+
+	// Destructure base event
+	const {
+		kind,
+		data: eventData,
+	} = json as BaseEvent
+
+	// Decode specific event data
+	const innerEvent = JSON.parse(atob(eventData))
+
+	// Parse typed event
+	switch (kind) {
+		case 'flag':
+			const event = innerEvent as TypedEvent<FlagEvent>
+			console.log({
+				event: 'receivedEvent',
+				eventType: 'flagEvent',
+				eventData: event,
+			})
+			return { kind: 'acknowledged'}
+		default:
+			console.log({
+				event: 'receivedEvent',
+				eventType: 'unknown',
+				eventData: innerEvent,
+			})
+			return { kind: 'rejected' }
+	}
+}
+
+router
+	.post('/ingest', ingest)
+
+export default router
