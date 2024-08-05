@@ -52,17 +52,17 @@ public extension Sheeplytics {
         try self.initialize(config: Config(endpoint: endpoint))
     }
     
-    func setFlag(_ name: String, active value: Bool = true) async throws {
+    func setFlag(_ name: String, active value: Bool = true, metadata: Metadata = [:]) async throws {
         try self.ensureInitialized()
         
-        let event = try self.wrap(FlagEvent(name: name, value: value))
+        let event = try self.wrap(FlagEvent(name: name, value: value), metadata: metadata)
         try await self.send(event)
     }
     
-    func logAction(_ name: String) async throws {
+    func logAction(_ name: String, metadata: Metadata = [:]) async throws {
         try self.ensureInitialized()
         
-        let event = try self.wrap(ActionEvent(name: name))
+        let event = try self.wrap(ActionEvent(name: name), metadata: metadata)
         try await self.send(event)
     }
 }
@@ -77,11 +77,11 @@ public extension Sheeplytics {
         try Self.initialize(config: Config(endpoint: endpoint))
     }
     
-    static func setFlag(_ name: String, active value: Bool = true) async throws {
-        try await Self.shared.setFlag(name, active: value)
+    static func setFlag(_ name: String, active value: Bool = true, metadata: Metadata = [:]) async throws {
+        try await Self.shared.setFlag(name, active: value, metadata: metadata)
     }
     
-    static func logAction(_ name: String) async throws {
-        try await Self.shared.logAction(name)
+    static func logAction(_ name: String, metadata: Metadata = [:]) async throws {
+        try await Self.shared.logAction(name, metadata: metadata)
     }
 }

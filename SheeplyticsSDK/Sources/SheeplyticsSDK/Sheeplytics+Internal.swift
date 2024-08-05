@@ -10,7 +10,7 @@ import Foundation
 internal extension Sheeplytics {
     
     /// Wrap a specific event payload into a proper event.
-    func wrap<TEvent>(_ event: TEvent) throws -> Event where TEvent: EventPayload {
+    func wrap<TEvent>(_ event: TEvent, metadata: Metadata = [:]) throws -> Event where TEvent: EventPayload {
         let jsonEncoder = JSONEncoder()
         guard let jsonData = try? jsonEncoder.encode(event) else {
             throw Sheeplytics.Error.invalidEventData
@@ -19,7 +19,8 @@ internal extension Sheeplytics {
             kind: TEvent.kind,
             appId: self.appIdentifier,
             userId: self.userIdentifier,
-            data: jsonData
+            data: jsonData,
+            metadata: metadata
         )
     }
     

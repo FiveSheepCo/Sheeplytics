@@ -21,17 +21,27 @@ public extension Sheeplytics {
         let userId: String
         
         /// Event Timestamp
-        let timestamp: Date
+        let timestamp: String
         
         /// Inner JSON Payload
         let data: Data
         
-        init(kind: EventKind, appId: String, userId: String, data: Data) {
+        /// Additional Metadata
+        let metadata: [String: MetadataValue]
+        
+        init(
+            kind: EventKind,
+            appId: String,
+            userId: String,
+            data: Data,
+            metadata: [String: any IntoMetadataValue] = [:]
+        ) {
             self.kind = kind
             self.appId = appId
             self.userId = userId
             self.data = data
-            self.timestamp = Date.now
+            self.timestamp = Date.now.ISO8601Format(.iso8601)
+            self.metadata = metadata.mapValues { $0.into() }
         }
     }
 }

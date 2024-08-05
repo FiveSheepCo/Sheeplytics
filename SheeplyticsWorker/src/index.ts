@@ -1,4 +1,5 @@
 import { AutoRouter } from 'itty-router'
+import type { BaseEvent, TypedEvent, FlagEvent, ActionEvent } from './event'
 
 /**
  * Welcome to Cloudflare Workers! This is your first worker.
@@ -15,20 +16,6 @@ import { AutoRouter } from 'itty-router'
 
 const router = AutoRouter()
 
-type EventKind = 'flag' | 'action'
-
-interface BaseEvent {
-	kind: EventKind
-	data: string
-}
-
-interface TypedEvent<T> extends Omit<BaseEvent, 'data'> {
-	data: T
-}
-
-type FlagEvent = TypedEvent<{ name: string, value: boolean }>
-type ActionEvent = TypedEvent<{ name: string, value: string }>
-
 type IngestResponseKind = 'acknowledged' | 'rejected'
 
 type IngestResponse = {
@@ -40,40 +27,27 @@ async function ingest(request: Request, context: any): Promise<IngestResponse> {
 	const json = await request.json()
 
 	// Destructure base event
-	const {
-		kind,
-		data: eventData,
-	} = json as BaseEvent
+	const baseEvent = json as BaseEvent
 
 	// Decode specific event data
-	const innerEvent = JSON.parse(atob(eventData))
+	const innerEvent = JSON.parse(atob(baseEvent.data))
+	console.log('Received event:', {
+		...baseEvent,
+		data: innerEvent,
+	})
 
 	// Parse typed event
-	switch (kind) {
+	switch (baseEvent.kind) {
 		case 'flag': {
 			const event = innerEvent as TypedEvent<FlagEvent>
-			console.log({
-				event: 'receivedEvent',
-				eventType: 'flagEvent',
-				eventData: event,
-			})
 			return { kind: 'acknowledged'}
 		}
 		case 'action': {
 			const event = innerEvent as TypedEvent<ActionEvent>
-			console.log({
-				event: 'receivedEvent',
-				eventType: 'actionEvent',
-				eventData: event,
-			})
 			return { kind: 'acknowledged' }
 		}
 		default: {
-			console.log({
-				event: 'receivedEvent',
-				eventType: 'unknown',
-				eventData: innerEvent,
-			})
+			console.log('Unknown event kind:', baseEvent.kind)
 			return { kind: 'rejected' }
 		}
 	}
