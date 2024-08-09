@@ -27,3 +27,17 @@ struct MyApp: App {
     }
 }
 ```
+
+## Worker
+
+**Migrate local database**
+`npm run db:migrate-dev`
+
+**Migrate remote database**
+`npm run db:migrate-prod`
+
+**Run worker locally**
+`npm run dev`
+
+**Deploy worker**
+`npm run deploy`

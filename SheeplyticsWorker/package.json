@@ -7,7 +7,9 @@
     "dev": "wrangler dev",
     "start": "wrangler dev",
     "test": "vitest",
-    "cf-typegen": "wrangler types"
+    "cf-typegen": "wrangler types",
+		"db:migrate-dev": "npx wrangler d1 migrations apply analytics",
+		"db:migrate-prod": "npx wrangler d1 migrations apply analytics --remote"
   },
   "devDependencies": {
     "@cloudflare/vitest-pool-workers": "^0.4.5",
