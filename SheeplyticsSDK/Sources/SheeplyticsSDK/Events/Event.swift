@@ -11,6 +11,9 @@ public extension Sheeplytics {
     
     struct Event: Codable {
         
+        /// Event Name
+        let name: String
+        
         /// Event Type
         let kind: EventKind
         
@@ -30,12 +33,14 @@ public extension Sheeplytics {
         let metadata: [String: MetadataValue]
         
         init(
+            name: String,
             kind: EventKind,
             appId: String,
             userId: String,
             data: Data,
             metadata: [String: any IntoMetadataValue] = [:]
         ) {
+            self.name = name
             self.kind = kind
             self.appId = appId
             self.userId = userId

@@ -6,7 +6,9 @@
 - **Sheeplytics SDK**: The Swift SDK.
 - **Sheeplytics Worker**: The Cloudflare worker.
 
-## Usage
+## Swift SDK
+
+### Usage
 
 ```swift
 import Sheeplytics
@@ -28,7 +30,7 @@ struct MyApp: App {
 }
 ```
 
-## Worker
+## Worker Development
 
 **Migrate local database**
 `npm run db:migrate-dev`

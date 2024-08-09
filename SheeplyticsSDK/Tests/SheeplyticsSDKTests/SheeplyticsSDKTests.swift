@@ -16,11 +16,10 @@ let mockConfig = Sheeplytics.Config(
 @Test @MainActor func encodeAndDecodeFlagEvent() async throws {
     try Sheeplytics.initialize(config: mockConfig)
     
-    let specificEvent = Sheeplytics.FlagEvent(name: "foo", value: true)
-    let wrappedEvent = try Sheeplytics.shared.wrap(specificEvent)
+    let specificEvent = Sheeplytics.FlagEvent(value: true)
+    let wrappedEvent = try Sheeplytics.shared.wrap("foo", data: specificEvent)
     
     let reconstructedSpecificEvent: Sheeplytics.FlagEvent = try JsonUtil.fromJsonData(wrappedEvent.data)
-    #expect(reconstructedSpecificEvent.name == "foo")
     #expect(reconstructedSpecificEvent.value == true)
     
     let json: String = try JsonUtil.toJsonString(wrappedEvent)

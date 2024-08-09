@@ -55,14 +55,14 @@ public extension Sheeplytics {
     func setFlag(_ name: String, active value: Bool = true, metadata: Metadata = [:]) async throws {
         try self.ensureInitialized()
         
-        let event = try self.wrap(FlagEvent(name: name, value: value), metadata: metadata)
+        let event = try self.wrap(name, data: FlagEvent(value: value), metadata: metadata)
         try await self.send(event)
     }
     
     func logAction(_ name: String, metadata: Metadata = [:]) async throws {
         try self.ensureInitialized()
         
-        let event = try self.wrap(ActionEvent(name: name), metadata: metadata)
+        let event = try self.wrap(name, data: ActionEvent(), metadata: metadata)
         try await self.send(event)
     }
 }

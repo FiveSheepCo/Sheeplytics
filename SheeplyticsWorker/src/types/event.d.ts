@@ -2,6 +2,7 @@ export type EventKind = 'flag' | 'action'
 export type MetadataValue = string | number | boolean
 
 export interface BaseEvent {
+	name: string
 	kind: EventKind
 	appId: string
 	userId: string
@@ -14,5 +15,5 @@ export interface TypedEvent<T> extends Omit<BaseEvent, 'data'> {
 	data: T
 }
 
-export type FlagEvent = TypedEvent<{ name: string, value: boolean }>
-export type ActionEvent = TypedEvent<{ name: string, value: string }>
+export type FlagEvent = TypedEvent<{ value: boolean }>
+export type ActionEvent = TypedEvent<{}>

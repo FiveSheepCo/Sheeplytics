@@ -1,0 +1,3 @@
+-- Migration number: 0002 	 2024-08-09T23:16:55.354Z
+
+ALTER TABLE Events ADD COLUMN name TEXT NOT NULL DEFAULT '';

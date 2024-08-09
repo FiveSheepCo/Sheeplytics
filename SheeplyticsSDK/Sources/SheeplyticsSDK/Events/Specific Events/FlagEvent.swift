@@ -10,11 +10,9 @@ public extension Sheeplytics {
     struct FlagEvent: EventPayload, Codable {
         static let kind: Sheeplytics.EventKind = .flag
         
-        let name: String
         let value: Bool
         
-        init(name: String, value: Bool) {
-            self.name = name
+        init(value: Bool) {
             self.value = value
         }
     }

@@ -15,9 +15,10 @@ export default class Database {
 	async insertEvent<T>(event: TypedEvent<T>): Promise<void> {
 		await this.createAppIfNotExists(event.appId)
 		await this.createUserIfNotExists(event.userId, event.appId)
-		await this.db.prepare('INSERT INTO Events (user_id, kind, inner_data, metadata, timestamp) VALUES (?, ?, ?, ?, ?)')
+		await this.db.prepare('INSERT INTO Events (user_id, name, kind, inner_data, metadata, timestamp) VALUES (?, ?, ?, ?, ?, ?)')
 			.bind(
 				event.userId,
+				event.name,
 				event.kind,
 				JSON.stringify(event.data),
 				JSON.stringify(event.metadata),

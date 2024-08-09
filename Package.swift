@@ -5,7 +5,7 @@ import PackageDescription
 
 let package = Package(
     name: "SheeplyticsSDK",
-    platforms: [.macOS(.v14), .iOS(.v14), .tvOS(.v14), .watchOS(.v6), .macCatalyst(.v13)],
+    platforms: [.macOS(.v14), .iOS(.v16), .macCatalyst(.v16)],
     products: [
         // Products define the executables and libraries a package produces, making them visible to other packages.
         .library(
@@ -16,10 +16,13 @@ let package = Package(
         // Targets are the basic building blocks of a package, defining a module or a test suite.
         // Targets can depend on other targets in this package and products from dependencies.
         .target(
-            name: "SheeplyticsSDK"),
+            name: "SheeplyticsSDK",
+            path: "SheeplyticsSDK/Sources"
+        ),
         .testTarget(
             name: "SheeplyticsSDKTests",
-            dependencies: ["SheeplyticsSDK"]
+            dependencies: ["SheeplyticsSDK"],
+            path: "SheeplyticsSDK/Tests"
         ),
     ]
 )
