@@ -1,14 +1,17 @@
+import { IRequest } from "itty-router"
+
 import Database from "../database"
-import { ActionEvent, BaseEvent, FlagEvent, TypedEvent } from "../types"
+import { ActionEvent, BaseEvent, FlagEvent } from "../types"
 
 type IngestResponseKind = 'acknowledged' | 'rejected'
 
 type IngestResponse = {
-	kind: IngestResponseKind
+	message: IngestResponseKind
+	status: number
 }
 
 /** Ingestion route for analytics events. */
-export default async function handler(request: Request, env: Env, context: any): Promise<IngestResponse> {
+export default async function handler(request: IRequest, env: Env): Promise<IngestResponse> {
 	const json = await request.json()
 
 	// Destructure base event
@@ -24,12 +27,12 @@ export default async function handler(request: Request, env: Env, context: any):
 	// Create database connection
 	const database = new Database(env.ANALYTICS_DB)
 
-	async function insertAs<T>(): Promise<any> {
+	async function insertAs<T>(): Promise<IngestResponse> {
 		try {
 			await database.insertEventAs<T>(innerEvent)
-			return { kind: 'acknowledged' }
+			return { message: 'acknowledged', status: 200 }
 		} catch {
-			return { kind: 'rejected' }
+			return { message: 'rejected', status: 200 }
 		}
 	}
 
@@ -39,7 +42,7 @@ export default async function handler(request: Request, env: Env, context: any):
 		case 'action': return await insertAs<ActionEvent>()
 		default: {
 			console.log('Unknown event kind:', baseEvent.kind)
-			return { kind: 'rejected' }
+			return { message: 'rejected', status: 200 }
 		}
 	}
 }

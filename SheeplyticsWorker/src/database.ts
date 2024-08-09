@@ -34,4 +34,10 @@ export default class Database {
 		const result = await this.db.prepare('SELECT app_id FROM Apps').all()
 		return Object.values(result.results) as Array<unknown> as Array<AppRow>
 	}
+
+	async clear(): Promise<void> {
+		await this.db.prepare('DELETE FROM Events').run()
+		await this.db.prepare('DELETE FROM Users').run()
+		await this.db.prepare('DELETE FROM Apps').run()
+	}
 }

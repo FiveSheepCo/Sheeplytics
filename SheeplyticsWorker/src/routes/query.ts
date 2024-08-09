@@ -21,7 +21,7 @@ function valueOrArrayOfValuesToArray<T>(value: undefined | T | Array<T>): Array<
 }
 
 /** Route for querying analytics data */
-export default async function handler(request: IRequest, env: Env, context: any): Promise<any> {
+export default async function handler(request: IRequest, env: Env): Promise<any> {
 
 	// Parse query parameters
 	const params = request.query as QueryParams

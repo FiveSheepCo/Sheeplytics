@@ -4,6 +4,9 @@ main = "src/index.ts"
 compatibility_date = "2024-07-29"
 compatibility_flags = ["nodejs_compat"]
 
+[vars]
+IS_DEVELOPMENT_MODE = "false"
+
 [[kv_namespaces]]
 binding = "ANALYTICS_KV"
 id = "70a319dd59f54241bd10e5921bc72413"
