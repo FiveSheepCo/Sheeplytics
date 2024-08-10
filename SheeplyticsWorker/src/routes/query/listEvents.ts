@@ -1,7 +1,7 @@
-import { IRequest } from "itty-router"
+import type { IRequest } from "itty-router"
 
 import Database from "../../database"
-import { EventKind } from "../../types"
+import type { EventKind } from "../../types"
 import { arraify } from "../../utils"
 
 type QueryParams = {

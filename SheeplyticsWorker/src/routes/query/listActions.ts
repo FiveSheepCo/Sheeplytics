@@ -1,4 +1,4 @@
-import { IRequest } from "itty-router"
+import type { IRequest } from "itty-router"
 
 import Database from "../../database"
 import { arraify } from "../../utils"
