@@ -19,3 +19,19 @@ export interface EventRow {
 	metadata: JsonString
 	timestamp: Date
 }
+
+export interface ActionRow {
+	action_id: number
+	app_id: string
+	user_id: string
+	event_name: string
+	trigger_count: number
+}
+
+export interface FlagRow {
+	flag_id: number
+	app_id: string
+	user_id: string
+	event_name: string
+	is_active: boolean
+}

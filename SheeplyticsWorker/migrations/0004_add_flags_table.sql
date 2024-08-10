@@ -1,0 +1,9 @@
+-- Migration number: 0004 	 2024-08-09T23:43:20.442Z
+
+CREATE TABLE Flags (
+	flag_id INTEGER PRIMARY KEY AUTOINCREMENT,
+	app_id TEXT NOT NULL,
+	user_id TEXT NOT NULL,
+	event_name TEXT NOT NULL,
+	is_active BOOLEAN NOT NULL
+);

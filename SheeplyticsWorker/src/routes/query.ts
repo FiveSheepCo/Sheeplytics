@@ -38,11 +38,12 @@ export default async function handler(request: IRequest, env: Env): Promise<any>
 	await db.createUserIfNotExists('user-foo', 'app-test')
 	await db.createUserIfNotExists('user-bar', 'app-test')
 	await db.insertEvent({
+		name: 'testFlag',
 		kind: 'flag',
 		appId: 'app-test',
 		userId: 'user-foo',
 		timestamp: new Date(),
-		data: { name: 'flag-1', value: true },
+		data: { value: true },
 		metadata: { version: 1, debug: true }
 	})
 
