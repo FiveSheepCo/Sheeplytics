@@ -1,4 +1,4 @@
-import { EventKind } from "./event"
+import type { EventKind } from "./event"
 
 export type JsonString = string
 
@@ -34,4 +34,16 @@ export interface FlagRow {
 	user_id: string
 	event_name: string
 	is_active: boolean
+}
+
+export type FlagEventHistoryRow = {
+	history_entry_id: number
+	flag_id: number
+	event_id: number
+}
+
+export type ActionEventHistoryRow = {
+	history_entry_id: number
+	action_id: number
+	event_id: number
 }

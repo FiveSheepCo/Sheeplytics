@@ -17,4 +17,4 @@ export interface TypedEvent<K extends EventKind = EventKind, T> extends Omit<Bas
 }
 
 export type FlagEvent = TypedEvent<'flag', { value: boolean }>
-export type ActionEvent = TypedEvent<'action', {}>
+export type ActionEvent = TypedEvent<'action', Record<string, never>>

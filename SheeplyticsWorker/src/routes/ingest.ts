@@ -1,7 +1,7 @@
-import { IRequest } from "itty-router"
+import type { IRequest } from "itty-router"
 
 import Database from "../database"
-import { ActionEvent, BaseEvent, FlagEvent, TypedEvent } from "../types"
+import type { BaseEvent, TypedEvent, EventKind } from "../types"
 
 type IngestResponseKind = 'acknowledged' | 'rejected'
 
@@ -16,8 +16,8 @@ export default async function handler(request: IRequest, env: Env): Promise<Inge
 
 	// Decode specific event data
 	const baseEvent = json as BaseEvent
-	const innerEvent: Record<string, any> = JSON.parse(atob(baseEvent.data))
-	const typedEvent: TypedEvent<any, any> = { ...baseEvent, data: innerEvent }
+	const innerEvent: Record<string, unknown> = JSON.parse(atob(baseEvent.data))
+	const typedEvent: TypedEvent<EventKind, unknown> = { ...baseEvent, data: innerEvent }
 
 	// Create database connection
 	const database = new Database(env.ANALYTICS_DB)
