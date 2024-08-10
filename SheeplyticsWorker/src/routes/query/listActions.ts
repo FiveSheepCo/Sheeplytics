@@ -13,8 +13,23 @@ type QueryParams = {
 	"order"?: "asc" | "desc",
 }
 
+type GeneralResult = {
+	app_id: string,
+	user_id: string,
+	name: string,
+	is_active: boolean,
+}
+
+type CountAggregateResult = { count: number }
+type SumAggregateResult = { sum: number }
+type AvgAggregateResult = { avg: number }
+type AggregateResult = CountAggregateResult | SumAggregateResult | AvgAggregateResult
+
+type DatabaseResult = Array<GeneralResult | AggregateResult>
+type RouteResult = Array<GeneralResult> | AggregateResult
+
 /** Route for querying analytics data */
-export default async function handler(request: IRequest, env: Env): Promise<any> {
+export default async function handler(request: IRequest, env: Env): Promise<RouteResult> {
 
 	// Parse query parameters
 	const params = request.query as QueryParams
@@ -67,8 +82,10 @@ export default async function handler(request: IRequest, env: Env): Promise<any>
 
 	// Execute query
 	const result = await db.db.prepare(query).bind(...queryBindings).all()
-	const rows = Object.values(result.results)
+	const rows = Object.values(result.results) as DatabaseResult
 
 	// Return results
-	return params.aggregate === undefined ? rows : rows[0]
+	return params.aggregate === undefined
+		? rows as Array<GeneralResult>
+		: rows[0] as AggregateResult
 }

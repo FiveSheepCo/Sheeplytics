@@ -1,7 +1,7 @@
 import type { IRequest } from "itty-router"
 
 import Database from "../../database"
-import type { EventKind } from "../../types"
+import type { EventKind, JsonString } from "../../types"
 import { arraify } from "../../utils"
 
 type QueryParams = {
@@ -12,8 +12,17 @@ type QueryParams = {
 	"order"?: "asc" | "desc",
 }
 
+type RouteResult = Array<{
+	app_id: string,
+	user_id: string,
+	event_name: string,
+	event_kind: EventKind,
+	event_data: JsonString,
+	event_metadata: JsonString
+}>
+
 /** Route for querying analytics data */
-export default async function handler(request: IRequest, env: Env): Promise<any> {
+export default async function handler(request: IRequest, env: Env): Promise<RouteResult> {
 
 	// Parse query parameters
 	const params = request.query as QueryParams
@@ -61,7 +70,7 @@ export default async function handler(request: IRequest, env: Env): Promise<any>
 
 	// Execute query
 	const result = await db.db.prepare(query).bind(...queryBindings).all()
-	const rows = Object.values(result.results)
+	const rows = Object.values(result.results) as RouteResult
 
 	// Return results
 	return rows
