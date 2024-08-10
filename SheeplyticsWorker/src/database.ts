@@ -22,17 +22,19 @@ export default class Database {
 		await this.db.prepare('INSERT OR IGNORE INTO Users (user_id, app_id) VALUES (?, ?)').bind(userId, appId).run()
 	}
 
-	async insertEvent<T>(event: TypedEvent<any, T>): Promise<void> {
+	async insertEvent(event: TypedEvent<any, any>): Promise<void> {
 		await this.createAppIfNotExists(event.appId)
 		await this.createUserIfNotExists(event.userId, event.appId)
-		await this.db.prepare('INSERT INTO Events (user_id, name, kind, inner_data, metadata, timestamp) VALUES (?, ?, ?, ?, ?, ?)')
+
+		await this.db
+			.prepare('INSERT INTO Events (user_id, name, kind, inner_data, metadata, timestamp) VALUES (?, ?, ?, ?, ?, ?)')
 			.bind(
 				event.userId,
 				event.name,
 				event.kind,
 				JSON.stringify(event.data),
 				JSON.stringify(event.metadata),
-				event.timestamp.toISOString()
+				event.timestamp
 			)
 			.run()
 
@@ -46,10 +48,6 @@ export default class Database {
 				break
 			}
 		}
-	}
-
-	async insertEventAs<T>(event: BaseEvent) {
-		await this.insertEvent(event as TypedEvent<any, T>)
 	}
 
 	async listApps(): Promise<Array<AppRow>> {

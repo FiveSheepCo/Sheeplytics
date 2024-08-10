@@ -6,7 +6,7 @@ export interface BaseEvent {
 	kind: EventKind
 	appId: string
 	userId: string
-	timestamp: Date
+	timestamp: string
 	data: string
 	metadata: Record<string, MetadataValue>
 }
