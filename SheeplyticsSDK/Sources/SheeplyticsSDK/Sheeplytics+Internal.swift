@@ -25,6 +25,13 @@ internal extension Sheeplytics {
         )
     }
     
+    /// Inject global metadata into event metadata.
+    func resolveMetadata(_ metadata: Metadata) -> Metadata {
+        metadata.merging(self.injectedMetadata, uniquingKeysWith: { oldValue, _ in
+            return oldValue // event value takes precedence over global value
+        })
+    }
+    
     func buildPostRequest(to url: URL, data: Data) -> URLRequest {
         var request = URLRequest(url: url)
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")

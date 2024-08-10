@@ -12,6 +12,9 @@ public final class Sheeplytics {
     var appIdentifier: String!
     var userIdentifier: String!
     
+    /// Global metadata to be injected into every event.
+    var injectedMetadata: Metadata = [:]
+    
     private init() {
         self.logger = Logger(subsystem: "co.fivesheep.sheeplytics", category: "Sheeplytics")
     }
@@ -25,6 +28,35 @@ public final class Sheeplytics {
 }
 
 public extension Sheeplytics {
+    
+    static func initialize(config: Sheeplytics.Config) throws {
+        try Self.shared.initialize(config: config)
+    }
+    
+    static func initialize(_ endpoint: String) throws {
+        try Self.initialize(config: Config(endpoint: endpoint))
+    }
+    
+    /// Set or unset a flag.
+    static func setFlag(_ name: String, active value: Bool = true, metadata: Metadata = [:]) async throws {
+        try await Self.shared.setFlag(name, active: value, metadata: metadata)
+    }
+    
+    /// Log an action that has just happened.
+    static func logAction(_ name: String, metadata: Metadata = [:]) async throws {
+        try await Self.shared.logAction(name, metadata: metadata)
+    }
+    
+    /// Inject metadata into every future event.
+    ///
+    /// - NOTE: Existing injected metadata is overridden on key collision.
+    /// Event metadata takes precedence over injected metadata.
+    static func injectMetadata(_ metadata: Metadata) {
+        Self.shared.injectMetadata(metadata)
+    }
+}
+
+internal extension Sheeplytics {
     
     func initialize(config: Sheeplytics.Config) throws {
         
@@ -55,33 +87,30 @@ public extension Sheeplytics {
     func setFlag(_ name: String, active value: Bool = true, metadata: Metadata = [:]) async throws {
         try self.ensureInitialized()
         
-        let event = try self.wrap(name, data: FlagEvent(value: value), metadata: metadata)
+        let event = try self.wrap(
+            name,
+            data: FlagEvent(value: value),
+            metadata: self.resolveMetadata(metadata)
+        )
+        
         try await self.send(event)
     }
     
     func logAction(_ name: String, metadata: Metadata = [:]) async throws {
         try self.ensureInitialized()
         
-        let event = try self.wrap(name, data: ActionEvent(), metadata: metadata)
+        let event = try self.wrap(
+            name,
+            data: ActionEvent(),
+            metadata: self.resolveMetadata(metadata)
+        )
+        
         try await self.send(event)
     }
-}
-
-public extension Sheeplytics {
     
-    static func initialize(config: Sheeplytics.Config) throws {
-        try Self.shared.initialize(config: config)
-    }
-    
-    static func initialize(_ endpoint: String) throws {
-        try Self.initialize(config: Config(endpoint: endpoint))
-    }
-    
-    static func setFlag(_ name: String, active value: Bool = true, metadata: Metadata = [:]) async throws {
-        try await Self.shared.setFlag(name, active: value, metadata: metadata)
-    }
-    
-    static func logAction(_ name: String, metadata: Metadata = [:]) async throws {
-        try await Self.shared.logAction(name, metadata: metadata)
+    func injectMetadata(_ metadata: Metadata) {
+        self.injectedMetadata.merge(metadata) { _, newValue in
+            return newValue // always override existing values
+        }
     }
 }
