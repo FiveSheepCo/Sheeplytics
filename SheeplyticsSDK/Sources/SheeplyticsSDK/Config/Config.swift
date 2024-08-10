@@ -11,16 +11,19 @@ extension Sheeplytics {
     
     /// The Sheeplytics configuration.
     public struct Config: Sendable {
-        let endpoint: String
+        let instance: String
+        let queryKey: String?
         let appIdentifier: AppIdentifier
         let userIdentifier: UserIdentifier
         
         public init(
-            endpoint: String,
+            instance: String,
+            queryKey: String? = nil,
             appIdentifier: AppIdentifier = .bundleId,
             userIdentifier: UserIdentifier = .autoDetect
         ) {
-            self.endpoint = endpoint
+            self.instance = instance
+            self.queryKey = queryKey
             self.appIdentifier = appIdentifier
             self.userIdentifier = userIdentifier
         }

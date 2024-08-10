@@ -33,8 +33,8 @@ public extension Sheeplytics {
         try Self.shared.initialize(config: config)
     }
     
-    static func initialize(_ endpoint: String) throws {
-        try Self.initialize(config: Config(endpoint: endpoint))
+    static func initialize(_ instance: String) throws {
+        try Self.initialize(config: Config(instance: instance))
     }
     
     /// Set or unset a flag.
@@ -61,7 +61,7 @@ internal extension Sheeplytics {
     func initialize(config: Sheeplytics.Config) throws {
         
         // Parse endpoint URL
-        guard let url = URL(string: config.endpoint) else {
+        guard let url = URL(string: config.instance) else {
             throw Sheeplytics.Error.endpointNotAnURL
         }
         
@@ -80,8 +80,8 @@ internal extension Sheeplytics {
         self.userIdentifier = userIdentifier
     }
     
-    func initialize(_ endpoint: String) throws {
-        try self.initialize(config: Config(endpoint: endpoint))
+    func initialize(_ instance: String) throws {
+        try self.initialize(config: Config(instance: instance))
     }
     
     func setFlag(_ name: String, active value: Bool = true, metadata: Metadata = [:]) async throws {
