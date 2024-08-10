@@ -8,6 +8,8 @@ const debugRouter = AutoRouter({base: '/debug'})
 // Query router
 const queryRouter = AutoRouter({base: '/query'})
 	.get('/events', query.listEventsHandler)
+	.get('/actions', query.listActionsHandler)
+	.get('/flags', query.listFlagsHandler)
 
 // General router
 const router = AutoRouter()

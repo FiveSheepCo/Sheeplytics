@@ -1,14 +1,15 @@
 import { IRequest } from "itty-router"
 
 import Database from "../../database"
-import { EventKind } from "../../types"
 import { arraify } from "../../utils"
+
+type AggregationKind = 'count' | 'sum' | 'avg'
 
 type QueryParams = {
 	"filter[appId]"?: string
 	"filter[userId]"?: string
-	"filter[eventKind]"?: EventKind,
 	"filter[eventName]"?: string,
+	"aggregate"?: AggregationKind,
 	"order"?: "asc" | "desc",
 }
 
@@ -19,7 +20,6 @@ export default async function handler(request: IRequest, env: Env): Promise<any>
 	const params = request.query as QueryParams
 	const appIdFilter = arraify(params['filter[appId]'])
 	const userIdFilter = arraify(params['filter[userId]'])
-	const eventKindFilter = arraify(params['filter[eventKind]'])
 	const eventNameFilter = arraify(params['filter[eventName]'])
 	const order = params.order?.toUpperCase() ?? 'DESC'
 
@@ -37,26 +37,32 @@ export default async function handler(request: IRequest, env: Env): Promise<any>
 
 	// Build filter clauses
 	const whereClauses = [
-		...buildMultiValueFilter(appIdFilter, 'app.app_id'),
-		...buildMultiValueFilter(userIdFilter, 'user.user_id'),
-		...buildMultiValueFilter(eventKindFilter, 'event.kind'),
-		...buildMultiValueFilter(eventNameFilter, 'event.name'),
+		...buildMultiValueFilter(appIdFilter, 'action.app_id'),
+		...buildMultiValueFilter(userIdFilter, 'action.user_id'),
+		...buildMultiValueFilter(eventNameFilter, 'action.event_name'),
 	].join(' AND ')
+
+	// Build select clause
+	const selectClause = (() => {
+		switch (params.aggregate) {
+			case 'count': return 'COUNT(*) AS count'
+			case 'sum': return 'SUM(action.trigger_count) AS sum'
+			case 'avg': return 'AVG(action.trigger_count) AS avg'
+			default: return `
+				action.app_id AS app_id,
+				action.user_id AS user_id,
+				action.event_name AS name,
+				action.trigger_count AS trigger_count
+			`.trim()
+		}
+	})()
 
 	// Build query
 	const query = `
-		SELECT
-			app.app_id AS app_id,
-			user.user_id AS user_id,
-			event.name AS event_name,
-			event.kind AS event_kind,
-			event.inner_data AS event_data,
-			event.metadata AS event_metadata
-		FROM Events event
-		JOIN Users user ON event.user_id = user.user_id
-		JOIN Apps app ON user.app_id = app.app_id
+		SELECT ${selectClause}
+		FROM Actions action
 		${whereClauses ? `WHERE ${whereClauses}` : ''}
-		ORDER BY event.timestamp ${order}
+		ORDER BY action.action_id ${order}
 	`
 
 	// Execute query
@@ -64,5 +70,5 @@ export default async function handler(request: IRequest, env: Env): Promise<any>
 	const rows = Object.values(result.results)
 
 	// Return results
-	return rows
+	return params.aggregate === undefined ? rows : rows[0]
 }
