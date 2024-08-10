@@ -1,7 +1,7 @@
 import { IRequest } from "itty-router"
 
-import Database from "../database"
-import { EventKind } from "../types"
+import Database from "../../database"
+import { EventKind } from "../../types"
 
 type QueryParams = {
 	"filter[appId]"?: string
