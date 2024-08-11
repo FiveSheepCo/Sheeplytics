@@ -1,7 +1,7 @@
 import type { IRequest } from "itty-router"
 
 import Database from "../../database"
-import { arraify } from "../../utils"
+import { arraify, FilterBuilder } from "../../utils"
 
 type AggregationKind = 'count'
 
@@ -39,21 +39,12 @@ export default async function handler(request: IRequest, env: Env): Promise<Rout
 	// Create database connection
 	const db = new Database(env.ANALYTICS_DB)
 
-	const queryBindings: Array<string> = []
-	function buildMultiValueFilter(values: Array<string>, column: string): Array<string> {
-		if (values.length === 0) {
-			return []
-		}
-		queryBindings.push(...values)
-		return [`(${values.map(_ => `${column} = ?`).join(' OR ')})`]
-	}
-
-	// Build filter clauses
-	const whereClauses = [
-		...buildMultiValueFilter(appIdFilter, 'flag.app_id'),
-		...buildMultiValueFilter(userIdFilter, 'flag.user_id'),
-		...buildMultiValueFilter(eventNameFilter, 'flag.event_name'),
-	].join(' AND ')
+	// Build where clause
+	const { whereClause, queryBindings } = new FilterBuilder()
+		.equalsAny('flag.app_id', appIdFilter)
+		.equalsAny('flag.user_id', userIdFilter)
+		.equalsAny('flag.event_name', eventNameFilter)
+		.build()
 
 	// Build select clause
 	const selectClause = (() => {
@@ -72,7 +63,7 @@ export default async function handler(request: IRequest, env: Env): Promise<Rout
 	const query = `
 		SELECT ${selectClause}
 		FROM Flags flag
-		${whereClauses ? `WHERE ${whereClauses}` : ''}
+		${whereClause ? `WHERE ${whereClause}` : ''}
 		ORDER BY flag.flag_id ${order}
 	`
 
