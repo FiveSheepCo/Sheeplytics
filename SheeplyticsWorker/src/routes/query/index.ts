@@ -10,3 +10,4 @@ export async function ensureAuthenticated(request: IRequest, env: Env) {
 export { default as listEventsHandler } from './listEvents'
 export { default as listFlagsHandler } from './listFlags'
 export { default as listActionsHandler } from './listActions'
+export { default as listChoicesHandler } from './listChoices'

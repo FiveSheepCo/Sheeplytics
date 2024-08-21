@@ -1,4 +1,4 @@
-export type EventKind = 'flag' | 'action'
+export type EventKind = 'flag' | 'action' | 'choice'
 export type MetadataValue = string | number | boolean
 
 export interface BaseEvent {
@@ -18,3 +18,4 @@ export interface TypedEvent<K extends EventKind = EventKind, T> extends Omit<Bas
 
 export type FlagEvent = TypedEvent<'flag', { value: boolean }>
 export type ActionEvent = TypedEvent<'action', Record<string, never>>
+export type ChoiceEvent = TypedEvent<'choice', { value: string }>

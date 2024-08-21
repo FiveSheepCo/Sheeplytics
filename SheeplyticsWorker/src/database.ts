@@ -1,4 +1,4 @@
-import type { ActionEvent, ActionRow, AppRow, BaseEvent, EventKind, FlagEvent, FlagRow, TypedEvent } from "./types"
+import type { ActionEvent, ActionRow, AppRow, BaseEvent, ChoiceEvent, ChoiceRow, EventKind, FlagEvent, FlagRow, TypedEvent } from "./types"
 
 function bufToHex(buffer: ArrayBuffer): string {
 	return Array.from(new Uint8Array(buffer)).map(b => b.toString(16).padStart(2, '0')).join('')
@@ -47,6 +47,10 @@ export default class Database {
 			}
 			case 'flag': {
 				await this._setFlagValue(event as FlagEvent, eventId)
+				break
+			}
+			case 'choice': {
+				await this._setChoiceValue(event as ChoiceEvent, eventId)
 				break
 			}
 		}
@@ -125,6 +129,39 @@ export default class Database {
 			const flagId = meta.last_row_id
 			await this.db.prepare('INSERT INTO FlagsEventHistory (flag_id, event_id) VALUES (?, ?)')
 				.bind(flagId, eventId)
+				.run()
+		}
+	}
+
+	async _setChoiceValue(event: ChoiceEvent, eventId: number) {
+
+		// Check if the choice already exists
+		const existingChoice: ChoiceRow | null = await this.db.prepare('SELECT choice_id FROM Choices WHERE app_id = ? AND user_id = ? AND event_name = ?')
+			.bind(event.appId, event.userId, event.name)
+			.first()
+
+		if (existingChoice) {
+
+			// Update choice value
+			await this.db.prepare('UPDATE Choices SET choice_value = ? WHERE choice_id = ?')
+				.bind(event.data.value, existingChoice.choice_id)
+				.run()
+
+			// Create history entry
+			await this.db.prepare('INSERT INTO ChoicesEventHistory (choice_id, event_id) VALUES (?, ?)')
+				.bind(existingChoice.choice_id, eventId)
+				.run()
+		} else {
+
+			// Create new choice
+			const { meta } = await this.db.prepare('INSERT INTO Choices (app_id, user_id, event_name, choice_value) VALUES (?, ?, ?, ?)')
+				.bind(event.appId, event.userId, event.name, event.data.value)
+				.run()
+
+			// Create history entry
+			const choiceId = meta.last_row_id
+			await this.db.prepare('INSERT INTO ChoicesEventHistory (choice_id, event_id) VALUES (?, ?)')
+				.bind(choiceId, eventId)
 				.run()
 		}
 	}

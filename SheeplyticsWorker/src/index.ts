@@ -10,6 +10,7 @@ const queryRouter = AutoRouter({base: '/query'})
 	.get('/events', query.listEventsHandler)
 	.get('/actions', query.listActionsHandler)
 	.get('/flags', query.listFlagsHandler)
+	.get('/choices', query.listChoicesHandler)
 
 // General router
 const router = AutoRouter()

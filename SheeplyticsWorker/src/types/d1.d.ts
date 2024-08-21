@@ -36,6 +36,14 @@ export interface FlagRow {
 	is_active: boolean
 }
 
+export interface ChoiceRow {
+	choice_id: number
+	app_id: string
+	user_id: string
+	event_name: string
+	choice_value: boolean
+}
+
 export type FlagEventHistoryRow = {
 	history_entry_id: number
 	flag_id: number
@@ -45,5 +53,11 @@ export type FlagEventHistoryRow = {
 export type ActionEventHistoryRow = {
 	history_entry_id: number
 	action_id: number
+	event_id: number
+}
+
+export type ChoiceEventHistoryRow = {
+	history_entry_id: number
+	choice_id: number
 	event_id: number
 }
