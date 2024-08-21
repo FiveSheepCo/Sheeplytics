@@ -7,10 +7,11 @@
 
 extension Sheeplytics {
     
-    public enum MetadataValue: Codable {
+    public indirect enum JsonValue: Codable {
         case string(String)
         case bool(Bool)
         case number(Double)
+        case array([JsonValue])
         
         public func encode(to encoder: any Encoder) throws {
             var encoder = encoder.singleValueContainer()
@@ -20,6 +21,8 @@ extension Sheeplytics {
                 case .bool(let value):
                     try encoder.encode(value)
                 case .number(let value):
+                    try encoder.encode(value)
+                case .array(let value):
                     try encoder.encode(value)
             }
         }
@@ -32,9 +35,11 @@ extension Sheeplytics {
                 self = .string(value)
             } else if let value = try? container.decode(Double.self) {
                 self = .number(value)
+            } else if let value = try? container.decode([JsonValue].self) {
+                self = .array(value)
             } else {
                 throw DecodingError.typeMismatch(
-                    MetadataValue.self,
+                    JsonValue.self,
                     DecodingError.Context(
                         codingPath: container.codingPath,
                         debugDescription: "Invalid type for value."

@@ -47,6 +47,16 @@ public extension Sheeplytics {
         try await Self.shared.logAction(name, metadata: metadata)
     }
     
+    /// Submit a choice that has been made.
+    static func submitChoice(_ name: String, value: String, metadata: Metadata = [:]) async throws {
+        try await Self.shared.submitChoice(name, value: value, metadata: metadata)
+    }
+    
+    /// Submit a choice that has been made.
+    static func submitChoice<E>(_ name: String, value: E, metadata: Metadata = [:]) async throws where E: RawRepresentable, E.RawValue == String {
+        try await Self.shared.submitChoice(name, value: value.rawValue, metadata: metadata)
+    }
+    
     /// Inject metadata into every future event.
     ///
     /// - NOTE: Existing injected metadata is overridden on key collision.
@@ -102,6 +112,18 @@ internal extension Sheeplytics {
         let event = try self.wrap(
             name,
             data: ActionEvent(),
+            metadata: self.resolveMetadata(metadata)
+        )
+        
+        try await self.send(event)
+    }
+    
+    func submitChoice(_ name: String, value: String, metadata: Metadata = [:]) async throws {
+        try self.ensureInitialized()
+        
+        let event = try self.wrap(
+            name,
+            data: ChoiceEvent(value: value),
             metadata: self.resolveMetadata(metadata)
         )
         

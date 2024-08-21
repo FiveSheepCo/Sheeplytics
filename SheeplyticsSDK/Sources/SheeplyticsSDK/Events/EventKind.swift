@@ -16,5 +16,8 @@ public extension Sheeplytics {
         
         /// An action that has been completed by the user.
         case action
+        
+        /// A choice that has been made by the user.
+        case choice
     }
 }

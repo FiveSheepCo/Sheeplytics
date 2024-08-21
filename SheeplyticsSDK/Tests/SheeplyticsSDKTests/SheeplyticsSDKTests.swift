@@ -3,7 +3,7 @@ import Foundation
 @testable import SheeplyticsSDK
 
 let mockConfig = Sheeplytics.Config(
-    endpoint: "http://localhost:8787",
+    instance: "http://localhost:8787",
     appIdentifier: .custom("co.fivesheep.SheeplyticsSDKTests"),
     userIdentifier: .custom("testUser")
 )
@@ -47,4 +47,13 @@ let mockConfig = Sheeplytics.Config(
         "baz": 3.14,
         "qux": "hello"
     ])
+}
+
+@Test @MainActor func sendChoiceEvent() async throws {
+    try Sheeplytics.initialize(config: mockConfig)
+    enum ChatFilter: String, CaseIterable {
+        case all = "all"
+        case unread = "unread"
+    }
+    try await Sheeplytics.submitChoice("chatFilter", value: ChatFilter.unread)
 }

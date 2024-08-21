@@ -7,5 +7,5 @@
 
 public extension Sheeplytics {
     
-    typealias Metadata = [String: any IntoMetadataValue]
+    typealias Metadata = [String: any IntoJsonValue]
 }

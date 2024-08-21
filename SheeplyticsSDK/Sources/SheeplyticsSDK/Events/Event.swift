@@ -30,7 +30,7 @@ public extension Sheeplytics {
         let data: Data
         
         /// Additional Metadata
-        let metadata: [String: MetadataValue]
+        let metadata: [String: JsonValue]
         
         init(
             name: String,
@@ -38,7 +38,7 @@ public extension Sheeplytics {
             appId: String,
             userId: String,
             data: Data,
-            metadata: [String: any IntoMetadataValue] = [:]
+            metadata: [String: any IntoJsonValue] = [:]
         ) {
             self.name = name
             self.kind = kind
