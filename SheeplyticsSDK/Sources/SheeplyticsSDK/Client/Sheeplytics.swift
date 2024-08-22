@@ -1,6 +1,7 @@
 import Foundation
 import OSLog
 
+/// Helper method to run code asynchronously in the background while ignoring any errors.
 internal func withAsyncNoThrow(_ body: @escaping @Sendable () async throws -> Void) {
     Task.detached {
         try? await body()
@@ -8,7 +9,6 @@ internal func withAsyncNoThrow(_ body: @escaping @Sendable () async throws -> Vo
 }
 
 // We declare `Sheeplytics` as `@unchecked Sendable`.
-//
 // It wouldn't usually be `Sendable` because of its mutable properties.
 //
 // All writes to these properties are made safe by explicitly
@@ -21,13 +21,16 @@ public final class Sheeplytics: @unchecked Sendable {
     @MainActor internal static let shared = Sheeplytics()
     
     let logger: Logger
-    
+
+    // Unchecked mutable properties
+    // *IMPORTANT*: Writes MUST happen through `MainActor`!
     private(set) var endpointUrl: URL!
     private(set) var appIdentifier: String!
     private(set) var userIdentifier: String!
     
+    // *IMPORTANT*: Writes MUST happen through `MainActor`!
     /// Global metadata to be injected into every event.
-    var injectedMetadata: Metadata = [:]
+    private(set) var injectedMetadata: Metadata = [:]
     
     private init() {
         self.logger = Logger(subsystem: "co.fivesheep.sheeplytics", category: "Sheeplytics")
@@ -43,13 +46,13 @@ public final class Sheeplytics: @unchecked Sendable {
 
 public extension Sheeplytics {
     
-    // This HAS to be `MainActor`-isolated at all times, because it ensures
+    // This MUST be `MainActor`-isolated at all times, because it ensures
     // sound and synchronized access to the mutable properties of `Sheeplytics`.
     @MainActor static func initialize(config: Sheeplytics.Config) throws {
         try Self.shared.initialize(config: config)
     }
     
-    // This HAS to be `MainActor`-isolated at all times, because it ensures
+    // This MUST be `MainActor`-isolated at all times, because it ensures
     // sound and synchronized access to the mutable properties of `Sheeplytics`.
     @MainActor static func initialize(_ instance: String) throws {
         try Self.initialize(config: Config(instance: instance))
@@ -97,7 +100,7 @@ public extension Sheeplytics {
 
 internal extension Sheeplytics {
     
-    // This HAS to be `MainActor`-isolated at all times, because it ensures
+    // This MUST be `MainActor`-isolated at all times, because it ensures
     // sound and synchronized access to the mutable properties of `Sheeplytics`.
     @MainActor func initialize(config: Sheeplytics.Config) throws {
         
@@ -121,7 +124,7 @@ internal extension Sheeplytics {
         self.userIdentifier = userIdentifier
     }
     
-    // This HAS to be `MainActor`-isolated at all times, because it ensures
+    // This MUST be `MainActor`-isolated at all times, because it ensures
     // sound and synchronized access to the mutable properties of `Sheeplytics`.
     @MainActor func initialize(_ instance: String) throws {
         try self.initialize(config: Config(instance: instance))
@@ -163,7 +166,7 @@ internal extension Sheeplytics {
         try await self.send(event)
     }
     
-    func injectMetadata(_ metadata: Metadata) {
+    @MainActor func injectMetadata(_ metadata: Metadata) {
         self.injectedMetadata.merge(metadata) { _, newValue in
             return newValue // always override existing values
         }
