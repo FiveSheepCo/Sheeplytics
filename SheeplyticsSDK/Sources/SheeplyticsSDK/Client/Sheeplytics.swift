@@ -1,6 +1,12 @@
 import Foundation
 import OSLog
 
+internal func withAsyncNoThrow(_ body: @escaping @Sendable () async throws -> Void) {
+    Task.detached {
+        try? await body()
+    }
+}
+
 @MainActor
 public final class Sheeplytics {
     
@@ -38,23 +44,32 @@ public extension Sheeplytics {
     }
     
     /// Set or unset a flag.
-    static func setFlag(_ name: String, active value: Bool = true, metadata: Metadata = [:]) async throws {
-        try await Self.shared.setFlag(name, active: value, metadata: metadata)
+    static func setFlag(_ name: String, active value: Bool = true, metadata: Metadata = [:]) {
+        withAsyncNoThrow {
+            try await Self.shared.setFlag(name, active: value, metadata: metadata)
+        }
     }
     
     /// Log an action that has just happened.
-    static func logAction(_ name: String, metadata: Metadata = [:]) async throws {
-        try await Self.shared.logAction(name, metadata: metadata)
+    static func logAction(_ name: String, metadata: Metadata = [:]) {
+        withAsyncNoThrow {
+            try await Self.shared.logAction(name, metadata: metadata)
+        }
     }
     
     /// Submit a choice that has been made.
-    static func submitChoice(_ name: String, value: String, metadata: Metadata = [:]) async throws {
-        try await Self.shared.submitChoice(name, value: value, metadata: metadata)
+    static func submitChoice(_ name: String, value: String, metadata: Metadata = [:]) {
+        withAsyncNoThrow {
+            try await Self.shared.submitChoice(name, value: value, metadata: metadata)
+        }
     }
     
     /// Submit a choice that has been made.
-    static func submitChoice<E>(_ name: String, value: E, metadata: Metadata = [:]) async throws where E: RawRepresentable, E.RawValue == String {
-        try await Self.shared.submitChoice(name, value: value.rawValue, metadata: metadata)
+    static func submitChoice<E>(_ name: String, value: E, metadata: Metadata = [:]) where E: RawRepresentable, E.RawValue == String {
+        let rawValue = value.rawValue
+        withAsyncNoThrow {
+            try await Self.shared.submitChoice(name, value: rawValue, metadata: metadata)
+        }
     }
     
     /// Inject metadata into every future event.

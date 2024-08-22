@@ -7,7 +7,7 @@
 
 extension Sheeplytics {
     
-    public indirect enum JsonValue: Codable {
+    public indirect enum JsonValue: Codable, Sendable {
         case string(String)
         case bool(Bool)
         case number(Double)

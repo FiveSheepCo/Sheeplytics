@@ -8,7 +8,7 @@
 public extension Sheeplytics {
     
     /// Protocol for types that can be converted into a metadata value.
-    protocol IntoJsonValue {
+    protocol IntoJsonValue: Sendable {
         
         /// Convert `self` into a metadata value.
         func into() -> JsonValue
