@@ -7,16 +7,24 @@ internal func withAsyncNoThrow(_ body: @escaping @Sendable () async throws -> Vo
     }
 }
 
-@MainActor
-public final class Sheeplytics {
+// We declare `Sheeplytics` as `@unchecked Sendable`.
+//
+// It wouldn't usually be `Sendable` because of its mutable properties.
+//
+// All writes to these properties are made safe by explicitly
+// marking the `initialize` methods as `@MainActor`.
+//
+// The Swift compiler cannot verify this, but it should be perfectly sound.
+public final class Sheeplytics: @unchecked Sendable {
     
     /// The shared instance.
-    internal static let shared = Sheeplytics()
+    @MainActor internal static let shared = Sheeplytics()
     
     let logger: Logger
-    var endpointUrl: URL!
-    var appIdentifier: String!
-    var userIdentifier: String!
+    
+    private(set) var endpointUrl: URL!
+    private(set) var appIdentifier: String!
+    private(set) var userIdentifier: String!
     
     /// Global metadata to be injected into every event.
     var injectedMetadata: Metadata = [:]
@@ -35,11 +43,15 @@ public final class Sheeplytics {
 
 public extension Sheeplytics {
     
-    static func initialize(config: Sheeplytics.Config) throws {
+    // This HAS to be `MainActor`-isolated at all times, because it ensures
+    // sound and synchronized access to the mutable properties of `Sheeplytics`.
+    @MainActor static func initialize(config: Sheeplytics.Config) throws {
         try Self.shared.initialize(config: config)
     }
     
-    static func initialize(_ instance: String) throws {
+    // This HAS to be `MainActor`-isolated at all times, because it ensures
+    // sound and synchronized access to the mutable properties of `Sheeplytics`.
+    @MainActor static func initialize(_ instance: String) throws {
         try Self.initialize(config: Config(instance: instance))
     }
     
@@ -77,13 +89,17 @@ public extension Sheeplytics {
     /// - NOTE: Existing injected metadata is overridden on key collision.
     /// Event metadata takes precedence over injected metadata.
     static func injectMetadata(_ metadata: Metadata) {
-        Self.shared.injectMetadata(metadata)
+        Task { @MainActor in
+            Self.shared.injectMetadata(metadata)
+        }
     }
 }
 
 internal extension Sheeplytics {
     
-    func initialize(config: Sheeplytics.Config) throws {
+    // This HAS to be `MainActor`-isolated at all times, because it ensures
+    // sound and synchronized access to the mutable properties of `Sheeplytics`.
+    @MainActor func initialize(config: Sheeplytics.Config) throws {
         
         // Parse endpoint URL
         guard let url = URL(string: config.instance) else {
@@ -105,7 +121,9 @@ internal extension Sheeplytics {
         self.userIdentifier = userIdentifier
     }
     
-    func initialize(_ instance: String) throws {
+    // This HAS to be `MainActor`-isolated at all times, because it ensures
+    // sound and synchronized access to the mutable properties of `Sheeplytics`.
+    @MainActor func initialize(_ instance: String) throws {
         try self.initialize(config: Config(instance: instance))
     }
     
