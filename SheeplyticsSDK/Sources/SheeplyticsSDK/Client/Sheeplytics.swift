@@ -20,14 +20,15 @@ public extension Sheeplytics {
         await Self.initialize(config: Config(instance: instance))
     }
     
-    static func initializeAsync(config: Sheeplytics.Config) {
+    static func initializeAsync(config: Sheeplytics.Config, completion: @Sendable @escaping () -> Void) {
         withAsyncNoThrow {
             try await SheeplyticsActor.shared.initialize(config: config)
+            completion()
         }
     }
     
-    static func initializeAsync(_ instance: String) {
-        Self.initializeAsync(config: Config(instance: instance))
+    static func initializeAsync(_ instance: String, completion: @Sendable @escaping () -> Void) {
+        Self.initializeAsync(config: Config(instance: instance), completion: completion)
     }
     
     /// Set or unset a flag.
