@@ -20,6 +20,16 @@ public extension Sheeplytics {
         await Self.initialize(config: Config(instance: instance))
     }
     
+    static func initializeAsync(config: Sheeplytics.Config) {
+        withAsyncNoThrow {
+            try await SheeplyticsActor.shared.initialize(config: config)
+        }
+    }
+    
+    static func initializeAsync(_ instance: String) {
+        Self.initializeAsync(config: Config(instance: instance))
+    }
+    
     /// Set or unset a flag.
     static func setFlag(_ name: String, active value: Bool = true, metadata: Metadata = [:]) {
         withAsyncNoThrow {
