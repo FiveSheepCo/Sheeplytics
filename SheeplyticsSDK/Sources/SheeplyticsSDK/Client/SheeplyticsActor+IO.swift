@@ -7,15 +7,15 @@
 
 import Foundation
 
-internal extension Sheeplytics {
+internal extension SheeplyticsActor {
     
     /// Wrap a specific event payload into a proper event.
-    func wrap<TEvent>(_ name: String, data: TEvent, metadata: Metadata = [:]) throws -> Event where TEvent: EventPayload {
+    func wrap<TEvent>(_ name: String, data: TEvent, metadata: Sheeplytics.Metadata = [:]) throws -> Sheeplytics.Event where TEvent: Sheeplytics.EventPayload {
         let jsonEncoder = JSONEncoder()
         guard let jsonData = try? jsonEncoder.encode(data) else {
             throw Sheeplytics.Error.invalidEventData
         }
-        return Event(
+        return Sheeplytics.Event(
             name: name,
             kind: TEvent.kind,
             appId: self.appIdentifier,
@@ -26,7 +26,7 @@ internal extension Sheeplytics {
     }
     
     /// Inject global metadata into event metadata.
-    func resolveMetadata(_ metadata: Metadata) -> Metadata {
+    func resolveMetadata(_ metadata: Sheeplytics.Metadata) -> Sheeplytics.Metadata {
         metadata.merging(self.injectedMetadata, uniquingKeysWith: { oldValue, _ in
             return oldValue // event value takes precedence over global value
         })
@@ -43,7 +43,7 @@ internal extension Sheeplytics {
         return request
     }
     
-    func send(_ event: Event) async throws {
+    func send(_ event: Sheeplytics.Event) async throws {
         let url = endpointUrl.appending(path: "/ingest")
         let req = buildPostRequest(to: url, data: try JsonUtil.toJsonData(event))
         let (_, response) = try await URLSession.shared.data(for: req)

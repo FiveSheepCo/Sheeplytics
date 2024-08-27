@@ -8,16 +8,16 @@ let mockConfig = Sheeplytics.Config(
     userIdentifier: .custom("testUser")
 )
 
-@Test @MainActor func initializeSharedInstance() async throws {
-    try Sheeplytics.initialize(config: mockConfig)
-    try Sheeplytics.shared.ensureInitialized()
+@Test @SheeplyticsActor func initializeSharedInstance() async throws {
+    Sheeplytics.initialize(config: mockConfig)
+    try await SheeplyticsActor.shared.ensureInitialized()
 }
 
-@Test @MainActor func encodeAndDecodeFlagEvent() async throws {
-    try Sheeplytics.initialize(config: mockConfig)
+@Test @SheeplyticsActor func encodeAndDecodeFlagEvent() async throws {
+    Sheeplytics.initialize(config: mockConfig)
     
     let specificEvent = Sheeplytics.FlagEvent(value: true)
-    let wrappedEvent = try Sheeplytics.shared.wrap("foo", data: specificEvent)
+    let wrappedEvent = try await SheeplyticsActor.shared.wrap("foo", data: specificEvent)
     
     let reconstructedSpecificEvent: Sheeplytics.FlagEvent = try JsonUtil.fromJsonData(wrappedEvent.data)
     #expect(reconstructedSpecificEvent.value == true)
@@ -29,9 +29,9 @@ let mockConfig = Sheeplytics.Config(
     #expect(reconstructedWrappedEvent.userId == "testUser")
 }
 
-@Test @MainActor func sendFlagEvent() async throws {
-    try Sheeplytics.initialize(config: mockConfig)
-    try await Sheeplytics.setFlag("didReceiveAdConsent", metadata: [
+@Test @SheeplyticsActor func sendFlagEvent() async throws {
+    Sheeplytics.initialize(config: mockConfig)
+    Sheeplytics.setFlag("didReceiveAdConsent", metadata: [
         "foo": true,
         "bar": 123,
         "baz": 3.14,
@@ -39,9 +39,9 @@ let mockConfig = Sheeplytics.Config(
     ])
 }
 
-@Test @MainActor func sendActionEvent() async throws {
-    try Sheeplytics.initialize(config: mockConfig)
-    try await Sheeplytics.logAction("didExportChat", metadata: [
+@Test @SheeplyticsActor func sendActionEvent() async throws {
+    Sheeplytics.initialize(config: mockConfig)
+    Sheeplytics.logAction("didExportChat", metadata: [
         "foo": true,
         "bar": 123,
         "baz": 3.14,
@@ -49,11 +49,11 @@ let mockConfig = Sheeplytics.Config(
     ])
 }
 
-@Test @MainActor func sendChoiceEvent() async throws {
-    try Sheeplytics.initialize(config: mockConfig)
+@Test @SheeplyticsActor func sendChoiceEvent() async throws {
+    Sheeplytics.initialize(config: mockConfig)
     enum ChatFilter: String, CaseIterable {
         case all = "all"
         case unread = "unread"
     }
-    try await Sheeplytics.submitChoice("chatFilter", value: ChatFilter.unread)
+    Sheeplytics.submitChoice("chatFilter", value: ChatFilter.unread)
 }

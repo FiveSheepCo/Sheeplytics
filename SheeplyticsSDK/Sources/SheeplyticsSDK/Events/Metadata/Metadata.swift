@@ -6,9 +6,7 @@
 //
 
 public extension Sheeplytics {
-    
-    typealias Metadata = [String: any IntoJsonValue]
+    typealias Metadata = [String: any Sheeplytics.IntoJsonValue]
 }
-
 
 extension Sheeplytics.Metadata: Sendable {}

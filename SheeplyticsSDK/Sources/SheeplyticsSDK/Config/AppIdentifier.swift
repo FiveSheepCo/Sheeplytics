@@ -18,7 +18,7 @@ public extension Sheeplytics.Config {
         /// Use a custom value for identification.
         case custom(String)
         
-        @MainActor internal var resolvedValue: String? {
+        internal var resolvedValue: String? {
             switch self {
                 case .bundleId:
                     Bundle.main.bundleIdentifier

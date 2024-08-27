@@ -9,7 +9,7 @@ import Foundation
 
 public extension Sheeplytics {
     
-    struct Event: Codable {
+    struct Event: Codable, Sendable {
         
         /// Event Name
         let name: String
