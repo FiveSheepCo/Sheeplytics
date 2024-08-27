@@ -27,7 +27,7 @@ public extension Sheeplytics.Config {
         /// Use a custom value for identification.
         case custom(String)
         
-        internal var resolvedValue: String? {
+        @MainActor internal var resolvedValue: String? {
             switch self {
                 case .autoDetect:
                     #if canImport(UIKit)

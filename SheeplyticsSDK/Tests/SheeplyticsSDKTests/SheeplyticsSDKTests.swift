@@ -8,13 +8,13 @@ let mockConfig = Sheeplytics.Config(
     userIdentifier: .custom("testUser")
 )
 
-@Test @SheeplyticsActor func initializeSharedInstance() async throws {
-    Sheeplytics.initialize(config: mockConfig)
+@Test func initializeSharedInstance() async throws {
+    await Sheeplytics.initialize(config: mockConfig)
     try await SheeplyticsActor.shared.ensureInitialized()
 }
 
-@Test @SheeplyticsActor func encodeAndDecodeFlagEvent() async throws {
-    Sheeplytics.initialize(config: mockConfig)
+@Test func encodeAndDecodeFlagEvent() async throws {
+    await Sheeplytics.initialize(config: mockConfig)
     
     let specificEvent = Sheeplytics.FlagEvent(value: true)
     let wrappedEvent = try await SheeplyticsActor.shared.wrap("foo", data: specificEvent)
@@ -29,8 +29,8 @@ let mockConfig = Sheeplytics.Config(
     #expect(reconstructedWrappedEvent.userId == "testUser")
 }
 
-@Test @SheeplyticsActor func sendFlagEvent() async throws {
-    Sheeplytics.initialize(config: mockConfig)
+@Test func sendFlagEvent() async throws {
+    await Sheeplytics.initialize(config: mockConfig)
     Sheeplytics.setFlag("didReceiveAdConsent", metadata: [
         "foo": true,
         "bar": 123,
@@ -39,8 +39,8 @@ let mockConfig = Sheeplytics.Config(
     ])
 }
 
-@Test @SheeplyticsActor func sendActionEvent() async throws {
-    Sheeplytics.initialize(config: mockConfig)
+@Test func sendActionEvent() async throws {
+    await Sheeplytics.initialize(config: mockConfig)
     Sheeplytics.logAction("didExportChat", metadata: [
         "foo": true,
         "bar": 123,
@@ -49,8 +49,8 @@ let mockConfig = Sheeplytics.Config(
     ])
 }
 
-@Test @SheeplyticsActor func sendChoiceEvent() async throws {
-    Sheeplytics.initialize(config: mockConfig)
+@Test func sendChoiceEvent() async throws {
+    await Sheeplytics.initialize(config: mockConfig)
     enum ChatFilter: String, CaseIterable {
         case all = "all"
         case unread = "unread"

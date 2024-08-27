@@ -34,7 +34,7 @@ internal final actor SheeplyticsActor {
 
 internal extension SheeplyticsActor {
     
-    func initialize(config: Sheeplytics.Config) throws {
+    func initialize(config: Sheeplytics.Config) async throws {
         
         // Parse endpoint URL
         guard let url = URL(string: config.instance) else {
@@ -42,12 +42,12 @@ internal extension SheeplyticsActor {
         }
         
         // Retrieve app identifier
-        guard let appIdentifier = config.appIdentifier.resolvedValue else {
+        guard let appIdentifier = await config.appIdentifier.resolvedValue else {
             throw Sheeplytics.Error.missingAppIdentifier
         }
         
         // Retrieve user identifier
-        guard let userIdentifier = config.userIdentifier.resolvedValue else {
+        guard let userIdentifier = await config.userIdentifier.resolvedValue else {
             throw Sheeplytics.Error.missingUserIdentifier
         }
         
@@ -56,8 +56,8 @@ internal extension SheeplyticsActor {
         self.userIdentifier = userIdentifier
     }
     
-    func initialize(_ instance: String) throws {
-        try self.initialize(config: Sheeplytics.Config(instance: instance))
+    func initialize(_ instance: String) async throws {
+        try await self.initialize(config: Sheeplytics.Config(instance: instance))
     }
     
     func setFlag(_ name: String, active value: Bool = true, metadata: Sheeplytics.Metadata = [:]) async throws {
