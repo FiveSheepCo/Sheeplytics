@@ -96,6 +96,18 @@ internal extension SheeplyticsActor {
         try await self.send(event)
     }
     
+    func setValue(_ name: String, value: some Sheeplytics.IntoJsonValue, metadata: Sheeplytics.Metadata = [:]) async throws {
+        try self.ensureInitialized()
+        
+        let event = try self.wrap(
+            name,
+            data: Sheeplytics.ValueEvent(value: value.into()),
+            metadata: self.resolveMetadata(metadata)
+        )
+        
+        try await self.send(event)
+    }
+    
     func injectMetadata(_ metadata: Sheeplytics.Metadata) {
         self.injectedMetadata.merge(metadata) { _, newValue in
             return newValue // always override existing values

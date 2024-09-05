@@ -19,5 +19,8 @@ public extension Sheeplytics {
         
         /// A choice that has been made by the user.
         case choice
+        
+        /// A value set by the user.
+        case value
     }
 }

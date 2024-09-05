@@ -60,6 +60,13 @@ public extension Sheeplytics {
         }
     }
     
+    /// Set a custom JSON value.
+    static func setValue(_ name: String, value: some IntoJsonValue, metadata: Metadata = [:]) async throws {
+        withAsyncNoThrow {
+            try await SheeplyticsActor.shared.setValue(name, value: value, metadata: metadata)
+        }
+    }
+    
     /// Inject metadata into every future event.
     ///
     /// - NOTE: Existing injected metadata is overridden on key collision.
