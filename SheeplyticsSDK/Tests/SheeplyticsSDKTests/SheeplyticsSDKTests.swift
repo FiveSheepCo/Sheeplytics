@@ -9,12 +9,12 @@ let mockConfig = Sheeplytics.Config(
 )
 
 @Test func initializeSharedInstance() async throws {
-    await Sheeplytics.initialize(config: mockConfig)
+    try await Sheeplytics.initialize(config: mockConfig)
     try await SheeplyticsActor.shared.ensureInitialized()
 }
 
 @Test func encodeAndDecodeFlagEvent() async throws {
-    await Sheeplytics.initialize(config: mockConfig)
+    try await Sheeplytics.initialize(config: mockConfig)
     
     let specificEvent = Sheeplytics.FlagEvent(value: true)
     let wrappedEvent = try await SheeplyticsActor.shared.wrap("foo", data: specificEvent)
@@ -30,8 +30,8 @@ let mockConfig = Sheeplytics.Config(
 }
 
 @Test func sendFlagEvent() async throws {
-    await Sheeplytics.initialize(config: mockConfig)
-    Sheeplytics.setFlag("didReceiveAdConsent", metadata: [
+    try await Sheeplytics.initialize(config: mockConfig)
+    try await SheeplyticsActor.shared.setFlag("didReceiveAdConsent", metadata: [
         "foo": true,
         "bar": 123,
         "baz": 3.14,
@@ -40,8 +40,8 @@ let mockConfig = Sheeplytics.Config(
 }
 
 @Test func sendActionEvent() async throws {
-    await Sheeplytics.initialize(config: mockConfig)
-    Sheeplytics.logAction("didExportChat", metadata: [
+    try await Sheeplytics.initialize(config: mockConfig)
+    try await SheeplyticsActor.shared.logAction("didExportChat", metadata: [
         "foo": true,
         "bar": 123,
         "baz": 3.14,
@@ -50,16 +50,17 @@ let mockConfig = Sheeplytics.Config(
 }
 
 @Test func sendChoiceEvent() async throws {
-    await Sheeplytics.initialize(config: mockConfig)
+    try await Sheeplytics.initialize(config: mockConfig)
     enum ChatFilter: String, CaseIterable {
         case all = "all"
         case unread = "unread"
     }
-    Sheeplytics.submitChoice("chatFilter", value: ChatFilter.unread)
+    try await SheeplyticsActor.shared.submitChoice("chatFilter", value: ChatFilter.unread.rawValue)
 }
 
 @Test func sendValueEvent() async throws {
-    await Sheeplytics.initialize(config: mockConfig)
-    Sheeplytics.submitChoice("fish", value: "eel")
+    try await Sheeplytics.initialize(config: mockConfig)
+    try await SheeplyticsActor.shared.setValue("fish", value: "eel")
+    try await SheeplyticsActor.shared.setValue("tonsOfOil", value: 150000)
 }
 

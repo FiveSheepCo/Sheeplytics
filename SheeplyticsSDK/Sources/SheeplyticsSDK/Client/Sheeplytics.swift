@@ -12,12 +12,12 @@ public final class Sheeplytics: Sendable {
 
 public extension Sheeplytics {
     
-    static func initialize(config: Sheeplytics.Config) async {
-        try? await SheeplyticsActor.shared.initialize(config: config)
+    static func initialize(config: Sheeplytics.Config) async throws {
+        try await SheeplyticsActor.shared.initialize(config: config)
     }
     
-    static func initialize(_ instance: String) async {
-        await Self.initialize(config: Config(instance: instance))
+    static func initialize(_ instance: String) async throws {
+        try await Self.initialize(config: Config(instance: instance))
     }
     
     static func initializeAsync(config: Sheeplytics.Config, completion: @Sendable @escaping () -> Void = {}) {
