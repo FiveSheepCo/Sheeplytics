@@ -5,9 +5,9 @@
 //  Created by Marco Quinten on 05.08.2024.
 //
 
-extension Sheeplytics {
+public extension Sheeplytics {
     
-    public indirect enum JsonValue: Codable, Sendable {
+    indirect enum JsonValue: Codable, Sendable {
         case string(String)
         case bool(Bool)
         case number(Double)

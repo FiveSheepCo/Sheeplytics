@@ -3,7 +3,7 @@ import OSLog
 
 /// Helper method to run code asynchronously in the background while ignoring any errors.
 internal func withAsyncNoThrow(_ body: @escaping @Sendable () async throws -> Void) {
-    Task.detached {
+    Task {
         try? await body()
     }
 }
