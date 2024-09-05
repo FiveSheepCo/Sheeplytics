@@ -1,4 +1,4 @@
-import type { EventKind } from "./event"
+import type { EventKind, JsonValue } from "./event"
 
 export type JsonString = string
 
@@ -44,6 +44,14 @@ export interface ChoiceRow {
 	choice_value: boolean
 }
 
+export interface JsonValueRow {
+	value_id: number
+	app_id: string
+	user_id: string
+	event_name: string
+	json_value: string
+}
+
 export type FlagEventHistoryRow = {
 	history_entry_id: number
 	flag_id: number
@@ -59,5 +67,11 @@ export type ActionEventHistoryRow = {
 export type ChoiceEventHistoryRow = {
 	history_entry_id: number
 	choice_id: number
+	event_id: number
+}
+
+export type JsonValueEventHistoryRow = {
+	history_entry_id: number
+	value_id: number
 	event_id: number
 }

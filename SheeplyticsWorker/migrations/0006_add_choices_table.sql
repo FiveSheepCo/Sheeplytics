@@ -1,4 +1,4 @@
--- Migration number: 0005 	 2024-08-21T07:55:00.000Z
+-- Migration number: 0006 	 2024-08-21T07:55:00.000Z
 
 CREATE TABLE Choices (
 	choice_id INTEGER PRIMARY KEY AUTOINCREMENT,

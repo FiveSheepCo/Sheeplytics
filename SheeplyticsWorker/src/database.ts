@@ -1,4 +1,4 @@
-import type { ActionEvent, ActionRow, AppRow, BaseEvent, ChoiceEvent, ChoiceRow, EventKind, FlagEvent, FlagRow, TypedEvent } from "./types"
+import type { ActionEvent, ActionRow, AppRow, BaseEvent, ChoiceEvent, ChoiceRow, EventKind, FlagEvent, FlagRow, TypedEvent, ValueEvent, JsonValueRow } from "./types"
 
 function bufToHex(buffer: ArrayBuffer): string {
 	return Array.from(new Uint8Array(buffer)).map(b => b.toString(16).padStart(2, '0')).join('')
@@ -52,6 +52,9 @@ export default class Database {
 			case 'choice': {
 				await this._setChoiceValue(event as ChoiceEvent, eventId)
 				break
+			}
+			case 'value': {
+				await this._setValueValue(event as ValueEvent, eventId)
 			}
 		}
 	}
@@ -162,6 +165,39 @@ export default class Database {
 			const choiceId = meta.last_row_id
 			await this.db.prepare('INSERT INTO ChoicesEventHistory (choice_id, event_id) VALUES (?, ?)')
 				.bind(choiceId, eventId)
+				.run()
+		}
+	}
+
+	async _setValueValue(event: ValueEvent, eventId: number) {
+
+		// Check if the value already exists
+		const existingValue: JsonValueRow | null = await this.db.prepare('SELECT value_id FROM JsonValues WHERE app_id = ? AND user_id = ? AND event_name = ?')
+			.bind(event.appId, event.userId, event.name)
+			.first()
+
+		if (existingValue) {
+
+			// Update value
+			await this.db.prepare('UPDATE JsonValues SET json_value = ? WHERE value_id = ?')
+				.bind(JSON.stringify(event.data.value), existingValue.value_id)
+				.run()
+
+			// Create history entry
+			await this.db.prepare('INSERT INTO JsonValuesEventHistory (value_id, event_id) VALUES (?, ?)')
+				.bind(existingValue.value_id, eventId)
+				.run()
+		} else {
+
+			// Create new value
+			const { meta } = await this.db.prepare('INSERT INTO JsonValues (app_id, user_id, event_name, json_value) VALUES (?, ?, ?, ?)')
+				.bind(event.appId, event.userId, event.name, JSON.stringify(event.data.value))
+				.run()
+
+			// Create history entry
+			const valueId = meta.last_row_id
+			await this.db.prepare('INSERT INTO JsonValuesEventHistory (value_id, event_id) VALUES (?, ?)')
+				.bind(valueId, eventId)
 				.run()
 		}
 	}

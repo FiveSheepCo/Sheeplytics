@@ -1,5 +1,5 @@
-export type EventKind = 'flag' | 'action' | 'choice'
-export type MetadataValue = string | number | boolean
+export type EventKind = 'flag' | 'action' | 'choice' | 'value'
+export type JsonValue = string | number | boolean | Array<MetadataValue>
 
 export interface BaseEvent {
 	name: string
@@ -8,7 +8,7 @@ export interface BaseEvent {
 	userId: string
 	timestamp: string
 	data: string
-	metadata: Record<string, MetadataValue>
+	metadata: Record<string, JsonValue>
 }
 
 export interface TypedEvent<K extends EventKind = EventKind, T> extends Omit<BaseEvent, 'data' | 'kind'> {
@@ -19,3 +19,4 @@ export interface TypedEvent<K extends EventKind = EventKind, T> extends Omit<Bas
 export type FlagEvent = TypedEvent<'flag', { value: boolean }>
 export type ActionEvent = TypedEvent<'action', Record<string, never>>
 export type ChoiceEvent = TypedEvent<'choice', { value: string }>
+export type ValueEvent = TypedEvent<'value', { value: JsonValue }>
