@@ -35,7 +35,7 @@ extension Swift.Bool: Sheeplytics.IntoJsonValue {
     }
 }
 
-extension Swift.Array where Element: Sheeplytics.IntoJsonValue {
+extension Swift.Array: Sheeplytics.IntoJsonValue where Element: Sheeplytics.IntoJsonValue {
     public func into() -> Sheeplytics.JsonValue {
         .array(self.map { $0.into() })
     }
