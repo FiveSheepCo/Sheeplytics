@@ -57,3 +57,9 @@ let mockConfig = Sheeplytics.Config(
     }
     Sheeplytics.submitChoice("chatFilter", value: ChatFilter.unread)
 }
+
+@Test func sendValueEvent() async throws {
+    await Sheeplytics.initialize(config: mockConfig)
+    Sheeplytics.submitChoice("fish", value: "eel")
+}
+

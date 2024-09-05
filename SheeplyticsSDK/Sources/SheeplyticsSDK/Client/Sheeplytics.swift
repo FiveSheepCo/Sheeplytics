@@ -61,7 +61,7 @@ public extension Sheeplytics {
     }
     
     /// Set a custom JSON value.
-    static func setValue(_ name: String, value: some IntoJsonValue, metadata: Metadata = [:]) async throws {
+    static func setValue(_ name: String, value: some IntoJsonValue, metadata: Metadata = [:]) {
         withAsyncNoThrow {
             try await SheeplyticsActor.shared.setValue(name, value: value, metadata: metadata)
         }
