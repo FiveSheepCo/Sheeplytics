@@ -11,6 +11,7 @@ const queryRouter = AutoRouter({base: '/query'})
 	.get('/actions', query.listActionsHandler)
 	.get('/flags', query.listFlagsHandler)
 	.get('/choices', query.listChoicesHandler)
+	.get('/values', query.listValuesHandler)
 
 // General router
 const router = AutoRouter()
