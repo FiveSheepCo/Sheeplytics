@@ -17,6 +17,9 @@ public extension Sheeplytics.Config {
     enum UserIdentifier: Sendable {
         case autoDetect
         
+        /// Use a debug user identifier.
+        case debug
+        
         #if canImport(UIKit)
         /// Use the device vendor identifier for identification.
         ///
@@ -35,6 +38,8 @@ public extension Sheeplytics.Config {
                     #else
                     nil
                     #endif
+                case .debug:
+                    "debug"
                 #if canImport(UIKit)
                 case .systemVendorId:
                     UIDevice.current.identifierForVendor?.uuidString
