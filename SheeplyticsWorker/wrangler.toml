@@ -7,10 +7,6 @@ compatibility_flags = ["nodejs_compat"]
 [vars]
 IS_DEVELOPMENT_MODE = "false"
 
-[[kv_namespaces]]
-binding = "ANALYTICS_KV"
-id = "70a319dd59f54241bd10e5921bc72413"
-
 [[d1_databases]]
 binding = "ANALYTICS_DB"
 database_name = "analytics"
