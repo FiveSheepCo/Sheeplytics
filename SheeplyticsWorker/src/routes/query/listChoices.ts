@@ -72,18 +72,18 @@ export default async function handler(request: IRequest, env: Env): Promise<Rout
 	const result = await db.db.prepare(query).bind(...queryBindings).all()
 	const rows = Object.values(result.results) as DatabaseResult
 
-	if (params.aggregate === undefined) {
-		for (let i = 0; i < rows.length; i++) {
-			const row = rows[i] as GeneralResult
+	// if (params.aggregate === undefined) {
+	// 	for (let i = 0; i < rows.length; i++) {
+	// 		const row = rows[i] as GeneralResult
 
-			// Find distinct choice values
-			const sql = "SELECT DISTINCT choice_value FROM Choices WHERE app_id = ? AND event_name = ?"
-			const result = (await db.db.prepare(sql).bind(row.app_id, row.name).all()).results as Array<{ choice_value: string }>
+	// 		// Find distinct choice values
+	// 		const sql = "SELECT DISTINCT choice_value FROM Choices WHERE app_id = ? AND event_name = ?"
+	// 		const result = (await db.db.prepare(sql).bind(row.app_id, row.name).all()).results as Array<{ choice_value: string }>
 
-			// Patch row
-			(rows[i] as GeneralResult).possible_values = result.map(r => r.choice_value)
-		}
-	}
+	// 		// Patch row
+	// 		(rows[i] as GeneralResult).possible_values = result.map(r => r.choice_value)
+	// 	}
+	// }
 
 	// Return results
 	return params.aggregate === undefined
