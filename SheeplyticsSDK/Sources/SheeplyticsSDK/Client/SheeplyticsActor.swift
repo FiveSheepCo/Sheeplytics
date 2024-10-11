@@ -54,6 +54,8 @@ internal extension SheeplyticsActor {
         self.endpointUrl = url
         self.appIdentifier = appIdentifier
         self.userIdentifier = userIdentifier
+        
+        self.logger.info("Sheeplytics initialized with appId '\(appIdentifier)', userId '\(userIdentifier)'")
     }
     
     func initialize(_ instance: String) async throws {

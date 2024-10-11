@@ -33,7 +33,9 @@ public extension Sheeplytics.Config {
         @MainActor internal var resolvedValue: String? {
             switch self {
                 case .autoDetect:
-                    #if canImport(UIKit)
+                    #if DEBUG
+                    UserIdentifier.debug.resolvedValue
+                    #elseif canImport(UIKit)
                     UserIdentifier.systemVendorId.resolvedValue
                     #else
                     nil
