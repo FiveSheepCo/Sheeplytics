@@ -2,8 +2,8 @@
 // by running `wrangler types`
 
 interface Env {
-	ANALYTICS_KV: KVNamespace;
 	IS_DEVELOPMENT_MODE: string;
 	QUERY_KEY: string;
 	ANALYTICS_DB: D1Database;
+	SIMILARITY_CACHE: KVNamespace;
 }
