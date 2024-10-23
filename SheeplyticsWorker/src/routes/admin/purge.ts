@@ -14,12 +14,7 @@ type GetInactiveUsersRow = {
 }
 
 async function getInactiveUsers(database: D1Database, maxAge: string): Promise<string[]> {
-	const stmt = database.prepare(`
-		SELECT user_id
-		FROM Events
-		GROUP BY user_id
-		HAVING MAX(DATE(timestamp)) < DATE('now', ?)
-	`.trim()).bind(maxAge)
+	const stmt = database.prepare(`SELECT user_id FROM Events GROUP BY user_id HAVING MAX(DATE(timestamp)) < DATE('now', ?)`).bind(maxAge)
 	const results = await stmt.all<GetInactiveUsersRow>()
 	return results.results.map(row => row.user_id)
 }
@@ -64,7 +59,7 @@ export default async function handler(request: IRequest, env: Env): Promise<Purg
 
 	const database = new Database(env.ANALYTICS_DB)
 	const inactiveUsers = await getInactiveUsers(database.db, maxAgeSql)
-	const inactiveUsersList = inactiveUsers.join(', ')
+	const inactiveUsersList = inactiveUsers.map(user_id => `"${user_id}"`).join(', ')
 	const stmt = database.db.prepare(`DELETE FROM Users WHERE user_id IN (${inactiveUsersList})`)
 	const result = await stmt.run()
 	return {
