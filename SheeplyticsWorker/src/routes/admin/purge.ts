@@ -28,7 +28,7 @@ async function getInactiveUsers(database: D1Database, maxAge: string): Promise<s
 export default async function handler(request: IRequest, env: Env): Promise<PurgeResponse> {
 
 	// Parse body
-	const body = request.json() as Partial<PurgeRequest>
+	const body = await request.json() as Partial<PurgeRequest>
 
 	if (body.maxAge === undefined) {
 		throw new Error('maxAge is required. Example: { "maxAge": "1 week" }')
