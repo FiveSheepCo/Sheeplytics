@@ -3,7 +3,12 @@
 
 interface Env {
 	IS_DEVELOPMENT_MODE: string;
+
+	// Authorization Keys
 	QUERY_KEY: string;
+	ADMIN_KEY: string;
+
+	// Cloudflare Bindings
 	ANALYTICS_DB: D1Database;
 	SIMILARITY_CACHE: KVNamespace;
 }
