@@ -1,5 +1,6 @@
-import { AutoRouter } from 'itty-router'
+import { AutoRouter, type IRequest } from 'itty-router'
 import { debug, ingest, query, admin } from './routes'
+import { purge } from './routes/admin/purge'
 
 // Debug router
 const debugRouter = AutoRouter({base: '/debug'})
@@ -24,4 +25,17 @@ const router = AutoRouter()
 	.all('/admin/*', admin.ensureAuthenticated, adminRouter.fetch)
 	.post('/ingest', ingest)
 
-export default router
+// Scheduled request via Cloudflare trigger
+export async function scheduled(request: IRequest, env: Env) {
+	const purgedUserCount = await purge(env.ANALYTICS_DB, '2 weeks')
+	console.log(`Purged ${purgedUserCount} inactive users.`)
+	return {
+		status: 'success',
+		operation: 'cleanup',
+		data: {
+			purgedUserCount
+		}
+	}
+}
+
+export default { scheduled, ...router }
