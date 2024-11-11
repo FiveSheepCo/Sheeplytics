@@ -63,7 +63,9 @@ internal extension SheeplyticsActor {
     }
     
     func logOut() {
-        self.logger.info("User '\(self.userIdentifier)' has logged out.")
+        if let userIdentifier {
+            self.logger.info("User '\(userIdentifier)' has logged out.")
+        }
         self.userIdentifier = nil
     }
     
