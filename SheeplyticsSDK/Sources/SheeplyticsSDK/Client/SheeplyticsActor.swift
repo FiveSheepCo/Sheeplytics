@@ -62,6 +62,11 @@ internal extension SheeplyticsActor {
         try await self.initialize(config: Sheeplytics.Config(instance: instance))
     }
     
+    func logOut() {
+        self.logger.info("User '\(self.userIdentifier)' has logged out.")
+        self.userIdentifier = nil
+    }
+    
     func setFlag(_ name: String, active value: Bool = true, metadata: Sheeplytics.Metadata = [:]) async throws {
         try self.ensureInitialized()
         

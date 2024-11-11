@@ -31,6 +31,10 @@ public extension Sheeplytics {
         Self.initializeAsync(config: Config(instance: instance), completion: completion)
     }
     
+    static func logOut() async {
+        await SheeplyticsActor.shared.logOut()
+    }
+    
     /// Set or unset a flag.
     static func setFlag(_ name: String, active value: Bool = true, metadata: Metadata = [:]) {
         withAsyncNoThrow {
