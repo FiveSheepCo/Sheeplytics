@@ -68,19 +68,25 @@ internal extension SheeplyticsActor {
     
     func send(_ batch: Sheeplytics.EventBatch) async throws {
         
+        // Reset the batch after sending
+        defer {
+            self.batch = nil
+        }
+        
         // Build the request
         let url = endpointUrl.appending(path: "/ingest")
         let req = buildPostRequest(to: url, data: try JsonUtil.toJsonData(batch.events))
         
         // Send the request and process the response
         let (_, response) = try await URLSession.shared.data(for: req)
-        if let response = response as? HTTPURLResponse, response.statusCode != 200 {
-            let error = Sheeplytics.Error.requestError(statusCode: response.statusCode)
-            logger.error("Failed to send event batch: \(error.localizedDescription)")
-            throw error
+        if let response = response as? HTTPURLResponse {
+            if response.statusCode != 200 {
+                let error = Sheeplytics.Error.requestError(statusCode: response.statusCode)
+                logger.error("Failed to send event batch: \(error.localizedDescription)")
+                throw error
+            } else {
+                logger.info("Successfully sent event batch with \(batch.events.count) events.")
+            }
         }
-        
-        // Reset the batch
-        self.batch = nil
     }
 }
