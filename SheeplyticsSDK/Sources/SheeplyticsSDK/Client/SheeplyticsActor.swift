@@ -13,12 +13,16 @@ internal final actor SheeplyticsActor {
     
     let logger: Logger
     
+    // Configuration
     private(set) var endpointUrl: URL!
     private(set) var appIdentifier: String!
     private(set) var userIdentifier: String!
     
     /// Global metadata to be injected into every event.
     private(set) var injectedMetadata: Sheeplytics.Metadata = [:]
+    
+    /// Current event batch.
+    var batch: Sheeplytics.EventBatch?
     
     private init() {
         self.logger = Logger(subsystem: "co.fivesheep.sheeplytics", category: "Sheeplytics")
@@ -115,6 +119,20 @@ internal extension SheeplyticsActor {
         )
         
         try await self.send(event)
+    }
+    
+    func withBatch(_ block: @escaping () async -> Void) async throws {
+        try self.ensureInitialized()
+        
+        // Create a new event batch
+        let batch = Sheeplytics.EventBatch()
+        self.batch = batch
+        
+        // Execute the block
+        await block()
+        
+        // Send the event batch
+        try await self.send(batch)
     }
     
     func injectMetadata(_ metadata: Sheeplytics.Metadata) {

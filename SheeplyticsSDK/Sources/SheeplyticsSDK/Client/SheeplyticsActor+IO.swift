@@ -44,13 +44,43 @@ internal extension SheeplyticsActor {
     }
     
     func send(_ event: Sheeplytics.Event) async throws {
+        
+        // Check if a batch exists
+        if let batch {
+            
+            // Add the event to the batch
+            batch.add(event)
+            return
+        }
+        
+        // Build the request
         let url = endpointUrl.appending(path: "/ingest")
         let req = buildPostRequest(to: url, data: try JsonUtil.toJsonData(event))
+        
+        // Send the request and process the response
         let (_, response) = try await URLSession.shared.data(for: req)
         if let response = response as? HTTPURLResponse, response.statusCode != 200 {
             let error = Sheeplytics.Error.requestError(statusCode: response.statusCode)
             logger.error("Failed to send event: \(error.localizedDescription)")
             throw error
         }
+    }
+    
+    func send(_ batch: Sheeplytics.EventBatch) async throws {
+        
+        // Build the request
+        let url = endpointUrl.appending(path: "/ingest")
+        let req = buildPostRequest(to: url, data: try JsonUtil.toJsonData(batch.events))
+        
+        // Send the request and process the response
+        let (_, response) = try await URLSession.shared.data(for: req)
+        if let response = response as? HTTPURLResponse, response.statusCode != 200 {
+            let error = Sheeplytics.Error.requestError(statusCode: response.statusCode)
+            logger.error("Failed to send event batch: \(error.localizedDescription)")
+            throw error
+        }
+        
+        // Reset the batch
+        self.batch = nil
     }
 }

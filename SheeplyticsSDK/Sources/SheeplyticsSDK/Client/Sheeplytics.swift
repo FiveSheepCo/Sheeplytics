@@ -71,6 +71,13 @@ public extension Sheeplytics {
         }
     }
     
+    /// Send a group of events in a batch.
+    static func withBatch(_ block: @escaping @Sendable () async -> Void) {
+        withAsyncNoThrow {
+            try await SheeplyticsActor.shared.withBatch(block)
+        }
+    }
+    
     /// Inject metadata into every future event.
     ///
     /// - NOTE: Existing injected metadata is overridden on key collision.
