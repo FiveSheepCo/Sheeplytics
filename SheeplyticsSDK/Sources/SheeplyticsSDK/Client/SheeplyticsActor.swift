@@ -124,8 +124,8 @@ internal extension SheeplyticsActor {
     func withBatch(_ block: @escaping () async -> Void) async throws {
         try self.ensureInitialized()
         
-        // Create a new event batch
-        let batch = Sheeplytics.EventBatch()
+        // Create a new event batch or reuse the current one
+        let batch = self.batch ?? Sheeplytics.EventBatch()
         self.batch = batch
         
         // Execute the block
