@@ -5,28 +5,28 @@
 //  Created by Marco Quinten on 05.08.2024.
 //
 
-public extension Sheeplytics {
-    
-    indirect enum JsonValue: Codable, Sendable {
+extension Sheeplytics {
+
+    public indirect enum JsonValue: Codable, Sendable {
         case string(String)
         case bool(Bool)
         case number(Double)
         case array([JsonValue])
-        
+
         public func encode(to encoder: any Encoder) throws {
             var encoder = encoder.singleValueContainer()
             switch self {
-                case .string(let value):
-                    try encoder.encode(value)
-                case .bool(let value):
-                    try encoder.encode(value)
-                case .number(let value):
-                    try encoder.encode(value)
-                case .array(let value):
-                    try encoder.encode(value)
+            case .string(let value):
+                try encoder.encode(value)
+            case .bool(let value):
+                try encoder.encode(value)
+            case .number(let value):
+                try encoder.encode(value)
+            case .array(let value):
+                try encoder.encode(value)
             }
         }
-        
+
         public init(from decoder: any Decoder) throws {
             let container = try decoder.singleValueContainer()
             if let value = try? container.decode(Bool.self) {

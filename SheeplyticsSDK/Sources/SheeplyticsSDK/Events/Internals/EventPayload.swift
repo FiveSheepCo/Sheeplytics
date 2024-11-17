@@ -6,7 +6,7 @@
 //
 
 extension Sheeplytics {
-    
+
     protocol EventPayload: Encodable {
         static var kind: EventKind { get }
     }
