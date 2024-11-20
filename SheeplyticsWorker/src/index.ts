@@ -26,7 +26,7 @@ const router = AutoRouter()
 	.post('/ingest', ingest)
 
 // Scheduled request via Cloudflare trigger
-export async function scheduled(request: IRequest, env: Env) {
+export async function scheduled(_request: IRequest, env: Env) {
 	const purgedUserCount = await purge(env.ANALYTICS_DB, '2 weeks')
 	console.log(`Purged ${purgedUserCount} inactive users.`)
 	return {
