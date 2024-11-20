@@ -12,10 +12,6 @@ binding = "ANALYTICS_DB"
 database_name = "analytics"
 database_id = "99bab1c3-d4c4-4ad2-aeb5-4dc9d7f81c42"
 
-[[kv_namespaces]]
-binding = "SIMILARITY_CACHE"
-id = "473f1abe3dfc44a0aed4a582a56029b2"
-
 # Automatically place your workloads in an optimal location to minimize latency.
 # If you are running back-end logic in a Worker, running it closer to your back-end infrastructure
 # rather than the end user may result in better performance.
