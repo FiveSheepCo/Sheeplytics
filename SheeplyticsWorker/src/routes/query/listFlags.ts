@@ -71,6 +71,15 @@ export default async function handler(request: IRequest, env: Env): Promise<Rout
 	const result = await db.db.prepare(query).bind(...queryBindings).all()
 	const rows = Object.values(result.results) as DatabaseResult
 
+	// Patch results
+	if (params.aggregate === undefined) {
+		for (const row of rows) {
+			if ('is_active' in row) {
+				row.is_active = (row.is_active as unknown as number) === 1
+			}
+		}
+	}
+
 	// Return results
 	return params.aggregate === undefined
 		? rows as Array<GeneralResult>
